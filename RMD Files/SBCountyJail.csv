@@ -1,0 +1,110 @@
+Date Isolated,Module,Housing,CID/Booking,Patient ,DOB ,Vaccination Status,Date of onset of symptoms ,Date of Intake,Quarantine Release Date,Positive test Date,Results ,Location Identified:,Status:,Notes:
+5/24/2022,East,ERH-37,,,,Pfizer x2,Asymptomatic,3/2/2022,,5/24/2022,Positive,West 16,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-30,,,,Unvaccinated,Asymptomatic,3/14/2022,,5/25/2022,Positive,West 13,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-32,,,,Unvaccinated,Asymptomatic,5/4/2022,,5/25/2022,Positive,West 13,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-33,,,,Janssen x1,Asymptomatic,1/2/2022,,5/25/2022,Positive,West 13,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-25,,,,Unvaccinated,Asymptomatic,4/11/2022,,5/25/2022,Positive,West 13,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-34,,,,Unvaccinated,5/22/2022,1/11/2022,,5/25/2022,Positive,West 13,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-35,,,,Unvaccinated,Asymptomatic,5/3/2022,,5/25/2022,Positive,West 13,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-38,,,,Unvaccinated,5/24/2022,4/11/2022,,5/25/2022,Positive,West 13,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-29,,,,Unvaccinated,Asymptomatic,2/10/2022,,5/25/2022,Positive,West 10,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-28,,,,Unvaccinated,Asymptomatic,3/25/2022,,5/25/2022,Positive,West 10,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-27,,,,Unvaccinated,Asymptomatic,2/14/2022,,5/25/2022,Positive,West 10,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-26,,,,Pfizer x2,Asymptomatic,3/10/2022,,5/25/2022,Positive,West 10,Recovered ,Recovered 6/4/22
+5/25/2022,East,ERH-36,,,,Unvaccinated,Asymptomatic,1/11/2022,,5/27/2022,Positive,NWA-1,Recovered,Recovered 6/6/22
+5/25/2022,Northwest,NWA-1,,,,Unvaccinated,Asymptomatic,3/18/2022,,5/28/2022,Positive,NWC-1,Recovered,Recovered 6/7/22
+5/25/2022,Northwest,NWA-1,,,,Unvaccinated,Asymptomatic,4/1/2022,,5/28/2022,Positive,NWC-5,Recovered,Recovered 6/7/22
+5/25/2022,Northwest,NWA-2,,,,Unvaccinated,Asymptomatic,10/8/2021,,5/28/2022,Positive,NWD-4,Recovered,Recovered 6/9/22
+5/25/2022,Northwest,NWA-3,,,,Unvaccinated,Asymptomatic,4/26/2022,,5/28/2022,Positive,NWD-5,Recovered,Recovered 6/9/22
+5/25/2022,Northwest,NWA-4,,,,Unvaccinated,5/28/2022,4/26/2022,,5/28/2022,Positive,IRC 325,Recovered,Recovered 6/7/22
+6/1/2022,Northwest,NWA-2,,,,Unvaccinated,Asymptomatic,3/14/2022,,6/2/2022,Positive,NWD-5,Recovered,Recovered 6/10/22
+5/25/2022,Northwest,NWA-3,,,,Janssen  ,Asymptomatic,1/6/2022,,6/2/2022,Positive,NWD-5,Recoverd,Recovered 6/24/22
+6/4/2022,East,ERH-25,,,,Janssen,Asymptomatic,6/4/2022,,6/5/2022,Positive,ERH,Recovered,Recovered 6/16/22
+5/25/2022,East,ERH-26,,,,Maderna,6/6/2022,3/3/2022,,6/6/2022,Positive,NWD-2,Recovered,Recovered 6/17/22
+6/7/2022,East,ERH-30,,,,Unvaccinated,6/7/2022,5/20/2022,,6/7/2022,Positive,BC-1,Recovered,Recovered 6/17/22
+6/9/2022,East,ERH-27,,,,Janssen/Moderan Booster,6/9/2022,3/22/2022,,6/9/2022,Positive,E-4,Recovered,Recovered 6/19/22
+6/9/2022,East,ERH-31,,,,Unvaccinated,6/9/2022,4/6/2022,,6/9/2022,Positive,E-8,Recovered,Recovered 6/19/22
+6/9/2022,East,ERH-29,,,,Moderna,6/9/2022,10/13/2021,,6/9/2022,Positive,E-8,Recovered,Recovered 6/19/22
+6/9/2022,Northwest,NWC-1,,,,Moderna,Asymptomatic,3/31/2022,,6/10/2022,Positive,NWC-8,Recovered,Recovered 6/21/22
+6/9/2022,Northwest,NWC-3,,,,Unvaccinated,Asymptomatic,5/19/2022,,6/10/2022,Positive,NWC-8,Recovered,Recovered 6/21/22
+6/9/2022,Northwest,NWC-3,,,,Unvaccinated,6/10/2022,2/22/2022,,6/10/2022,Positive,NWC-8,Recovered,Recovered 6/21/22
+6/9/2022,Northwest,NWC-4,,,,Moderna,Asymptomatic,4/8/2022,,6/10/2022,Positive,NWC-4,Recovered,Recovered 6/2/22
+6/10/2022,Northwest,NWA-3,,,,Janssen,Asymptomatic,3/15/2022,,6/13/2022,Positive,NWA-3,Recovered,Recovered 6/23/22
+6/10/2022,Northwest,NWA-3,,,,Unvaccinated,Asymptomatic,4/9/2022,,6/13/2022,Positive,NWA-3,Recovered,Recovered 6/23/22
+6/10/2022,Northwest,NWA-8,,,,Pfizer  ,Asymptomatic,5/25/2022,,6/13/2022,Positive,NWA-5,Recovered,Recovered 6/23/22
+6/10/2022,Northwest,NWA-8,,,,Janssen,Asymptomatic,2/12/2022,,6/13/2022,Positive,NWA-6,Recovered,Recovered 6/23/22
+6/10/2022,Northwest,NWA-8,,,,Janssen,Asymptomatic,12/26/2020,,6/13/2022,Positive,NWA-8,Recovered,Recovered 6/23/22
+6/10/2022,Northwest,NWD-4,,,,Janssen,Asymptomatic,4/26/2022,,6/13/2022,Positive,NWD-4,Recovered,Recovered 6/23/22
+6/10/2022,Northwest,NWD-4,,,,Unvaccinated,Asymptomatic,4/13/2021,,6/13/2022,Positive,NWD-4,Recovered,Recovered 6/23/22
+6/14/2022,East,ERH-28,,,,Unvaccinated,6/14/2022,2/11/2022,,6/14/2022,Positive,E-1,Recovered,
+6/14/2022,Northwest,NWD-8,,,,Janssen,Asymptomatic,1/14/2021,,6/14/2022,Positive,E-1,Recovered,
+6/14/2022,Northwest,NWD-8,,,,Unvaccinated,Asymptomatic,4/21/2022,,6/14/2022,Positive,E-1,Recovered,
+6/14/2022,East,ERH-37,,,,Unvaccinated,Asymptomatic,5/24/2022,,6/14/2022,Positive,E-1,Recovered,
+6/14/2022,Northwest,NWA-2,,,,Unvaccinated,Asymptomatic,8/21/2021,,6/14/2022,Positive,E-1,Recovered,
+6/14/2022,Northwest,NWA-2,,,,Unvaccinated,Asymptomatic,10/17/2022,,6/14/2022,Positive,E-1,Recovered,
+6/14/2022,Northwest,NWD-8,,,,Janssen,Asymptomatic,5/31/1955,,6/14/2022,Positive,E-1,Recovered,
+6/15/2022,Northwest,NWD-7,,,,Vaccinated,Asymptomatic,4/5/2022,,6/15/2022,Positive,NWD-6,Recovered,
+6/15/2022,Northwest,NWD-7,,,,Unvaccinated,Asymptomatic,7/22/2021,,6/15/2022,Positive,NWD-1,Recovered,
+6/15/2022,Northwest,NWD-7,,,,Vaccinated,Asymptomatic,10/23/2021,,6/15/2022,Positive,NWD-7 ,Recovered,
+6/15/2022,Northwest,NWC-8,,,,Vaccinated,6/15/2022,2/25/2022,,6/15/2022,Positive,NWC-5,Recovered,
+6/16/2022,Northwest,NWD-6,,,,Unvaccinated,Asymptomatic,8/6/2021,,6/16/2022,Positive,NWD-6,Recovered,
+6/16/2022,Northwest,NWD-6,,,,Unvaccinated,Asymptomatic,3/24/2022,,6/16/2022,Positive,NWD-6,Recovered,
+6/21/2022,East,ERH-26,,,,Janssen,Asymptomatic,1/12/2022,,6/21/2022,Positive,W-16,Recovered,
+6/25/2022,Northwest,NWC-1,,,,Unvaccinated,6/25/2022,5/9/2022,,6/25/2022,Positive,E-24,Recovered,
+6/25/2022,Northwest,NWD-8,,,,Janssen,Asymptomatic,8/3/2021,,6/25/2022,Positive,E-24,Recovered,
+6/25/2022,Northwest,NWD-8,,,,Maderna,Asymptomatic,4/15/2022,,6/25/2022,Positive,E-24,Recovered,
+6/25/2022,Northwest,NWC-1,,,,Unvaccinated,Asymptomatic,5/16/2022,,6/25/2022,Positive,E-24,Recovered,
+6/25/2022,Northwest,NWD-8,,,,Janssen,Asymptomatic,2/21/2022,,6/25/2022,Positive,E-24,Recovered,
+6/232022,East,ERH-30,,,,Unvaccinated,6/26/2022,6/6/2022,,6/23/2022,Positive,E-8,Recovered,7/5/2022
+6/23/2022,East,ERH-31,,,,Unvaccinated,Asymptomatic,8/23/2021,,6/23/2022,Positive,E-8,Recovered,
+6/23/2022,East,ERH-38,,,,J&J,Asymptomatic,6/3/2022,,6/23/2022,Positive,E-8,Recovered,
+6/23/2022,East,ERH-32,,,,Unvaccinated,6/26/2022,1/18/2022,,6/23/2022,Positive,E-8,Recovered,
+6/27/2022,East,ERH-29,,,,Unvaccinated,6/27/2022,1/26/2022,,6/27/2022,Positive,BC-4,Recovered,7/7/2022
+6/27/2022,Northwest,NWA-1,,,,Unvaccinated,6/27/2022,2/17/2022,,6/27/2022,Positive,NWA-4,Recovered,7/7/2022
+6/27/2022,East,ERH-36,,,,Janssen,Asymptomatic,12/4/2021,,6/27/2022,Positive,BC-4,Recovered,7/7/2022
+6/27/2022,East,ERH-33,,,,Unvaccinated,Asymptomatic,6/4/2022,,6/27/2022,Positive,BC-4,Recovered,7/7/2022
+6/27/2022,East,ERH-28,,,,Unvaccinated,Asymptomatic,3/10/2022,,6/27/2022,Positive,BC-4,Recovered,7/7/2022
+6/28/2022,Northwest,NWA-3,,,,Janssen/Pfizer,Asymptomatic,5/27/2022,,6/28/2022,Positive,NWA-3,Recovered,7/9/2022
+6/28/2022,Northwest,NWA-3,,,,Unvaccinated,Asymptomatic,4/19/2022,,6/28/2022,Positive,NWA-5,Recovered,7/9/2022
+6/28/2022,East,ERH-24,,,,Unvaccinated,6/28/2022,4/20/2022,,6/28/2022,Positive,BC-4,Recovered,7/9/2022
+6/29/2022,East,ERH-31,,,,Unvaccinated,6/29/2022,5/26/2022,,6/29/2022,Positive,E-24,Recovered,7/9/2022
+6/29/2022,East,ERH-32,,,,Unvaccinated,Asymptomatic,6/1/2022,,6/29/2022,Positive,BC-4,Recovered,7/9/2022
+6/29/2022,East,ERH-34,,,,Maderna,Asymptomatic,5/1/2022,,6/26/2022,Positive,W-10,Recovered,7/12/2022
+7/1/2022,East,ERH-25,,,,Unvaccinated,Asymptomatic,5/18/2022,,7/1/2022,Positive,E-24,Recovered,7/12/2022
+7/1/2022,Northwest,NWD-8,,,,Unvaccinated,7/1/2022,2/9/2022,,7/1/2022,Positive,W-16,Recovered,7/12/2022
+7/1/2022,Northwest,NWD-8,,,,Unvaccinated,Asymptomatic,12/10/2019,,7/1/2022,Positive,W-16,Recovered,7/12/2022
+7/1/2022,Northwest,NWC-8,,,,Unvaccinated,Asymptomatic,3/14/2022,,7/1/2022,Positive,W-13,Recovered,7/12/2022
+7/1/2022,Northwest,NWC-8,,,,Maderna,Asymptomatic,5/14/2022,,7/1/2022,Positive,W-13,Recovered,7/12/2022
+7/1/2022,Northwest,NWD-5,,,,Unvaccinated,Asymptomatic,5/24/2022,,7/1/2022,Positive,W-13,Recovered,7/12/2022
+7/1/2022,Northwest,NWC-8,,,,Unvaccinated,Asymptomatic,7/12/2022,,7/1/2022,Positive,W-13,Recovered,7/12/2022
+7/3/2022,Northwest,NWA-7,,,,Unvaccinated,7/3/2022,5/31/2022,,7/3/2022,Positive,W-6,Recovered,7/13/2022
+7/4/2022,Northwest,NWA-7,,,,Unvaccinated,7/4/2022,11/19/2021,,7/4/2022,Positive,W-10,Recovered,7/15/2022
+7/5/2022,Northwest,NWC-2,,,,Pfizer,Asymptomatic,5/10/2022,,7/5/2022,Positive,W-13,Recovered,7/15/2022
+7/5/2022,Northwest,NWA-6,,,,Unvaccinated,Asymptomatic,6/16/2022,,7/5/2022,Positive,W-13,Released,7/7/2022
+7/5/2022,Northwest,NWA-6,,,,Unvaccinated,Asymptomatic,6/7/2022,,7/5/2022,Positive,W-13,Recovered,7/16/2022
+7/5/2022,Northwest,NWD-8,,,,Janssen,Asymptomatic,6/29/2020,,7/5/2022,Positive,W-16,Recovered,7/16/2022
+7/4/2022,Northwest,NWC-3,,,,Janssen,7/4/2022,5/29/2022,,7/4/2022,Positive,W-8,Recovered,7/15/2022
+7/4/2022,Northwest,NWC-3,,,,Unvaccinated,7/4/2022,5/22/2022,,7/4/2022,Positive,W-8,Recovered,7/16/2022
+7/4/2022,East,ERH-35,,,,Janssen,7/4/2022,1/7/2022,,7/4/2022,Positive,W-8,Recovered,7/15/2022
+7/4/2022,Northwest,NWC-2,,,,Pfizer,7/4/2022,3/29/2022,,7/4/2022,Positive,W-8,Recovered,7/15/2022
+7/4/2022,Northwest,NWD-6,,,,Unvaccinated,7/4/2022,5/3/2022,,7/4/2022,Positive,W-8,Recovered,7/15/2022
+7/4/2022,Northwest,NWD-6,,,,Maderna,7/4/2022,5/13/2022,,7/4/2022,Positive,W-8,Recovered,7/17/2022
+7/4/2022,Northwest,NWD-6,,,,Maderna,Asymptomatic,5/16/2022,,7/4/2022,Positive,W-10,Recovered,7/15/2022
+7/6/2022,Northwest,NWD-7,,,,Unvaccinated,7/6/2022,11/24/2021,,7/6/2022,Positive,W-1 ,Recovered,7/15/2022
+7/7/2022,Northwest,NWA-6,,,,Janssen,Asymptomatic,10/23/2020,,7/7/2022,Positive,W-8,Recovered,7/18/2022
+7/7/2022,Northwest,NWD-5,,,,Pfizer,Asymptomatic,6/13/2022,,7/7/2022,Positive,W-8,Recovered,7/18/2022
+7/7/2022,Northwest,NWD-5,,,,Unvaccinated,Asymptomatic,3/24/2022,,7/7/2022,Positive,W-8,Released,7/15/2022
+7/8/2022,East,ERH-33,,,,Unvaccinated,Asymptomatic,4/9/2022,,7/8/2022,Positive,W-16,Recovered,7/24/2022
+7/11/2022,Northwest,NWA-4,,,,Janssen,Asymptomatic,5/20/2022,,7/11/2022,Positive,NWA-4,Recovered,7/25/2022
+7/11/2022,Northwest,NWA-7,,,,Unvaccinated,Asymptomatic,12/26/2021,,7/11/2022,Positive,NWA-7,Recovered,7/25/2022
+7/13/2022,East,ERH-34,,,,Janssen,Asymptomatic,3/16/2022,,7/13/2022,Positive,W-6,Recovered,7/25/2022
+,,,,,,,,,,,,,,
+,,,,,,,,Total Cases,99,,,,,
+,,,,,,,,Active,0,,Intake,2,,
+,,,,,,,,Recovered,97,,,,,
+,,,,,,,,Released,2,,,,,
+,,,,,,,,Symptomatic,28,,,,,
+,,,,,,,,Asymptomatic,71,,,,,
+,,,,,,,,Vaccinated,40,,,,,
+,,,,,,,,Unvaccinated,59,,,,,
+,,,,,,,,Hospitalized,0,,,,,
