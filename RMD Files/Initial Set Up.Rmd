@@ -26,7 +26,7 @@ library(ggthemes)
 
 ```{r, fig.cap="Sample", echo = F}
 data(pneumon)
-ggplotly(ggplot(data = pneumon, aes(x = smoke)) + geom_histogram(stat = "count"))
+#ggplotly(ggplot(data = pneumon, aes(x = smoke)) + geom_histogram(stat = "count"))
 ```
 ## Breakfast
 
@@ -52,6 +52,40 @@ ggplotly(ggplot(data = pneumon, aes(x = smoke)) + geom_histogram(stat = "count")
 data(pneumon)
 head(pneumon)
 
+#Check for NA
+any(is.na(pneumon))
 
+#Check data type for each column
+sapply(pneumon, class)
 
+# We turn columns desired into factors
+factor.cols <-
+  c(
+    "hospital",
+    "urban",
+    "alcohol",
+    "smoke",
+    "region",
+    "poverty",
+    "bweight",
+    "race",
+    "wmonth",
+    "sfmonth"
+  )
+pneumon[factor.cols] <- lapply(pneumon[factor.cols], as.factor)
+
+#Check data conversion
+str(pneumon)
+
+# Build the survival object
+pneu.surv <- Surv(time = pneumon$chldage, event = pneumon$hospital)
+```
+### Kaplan-Meier Curves 
+
+```{r}
+# Kaplan Meier Curves on Region
+KMobj <- survfit(pneu.surv ~ pneumon$urban, data = pneumon)
+
+#KMplot <- ggsurvplot(KMobj) #+ labs(title = "Time to Hospital by Region")
+#ggplotly(KMplot[[1]])
 ```
