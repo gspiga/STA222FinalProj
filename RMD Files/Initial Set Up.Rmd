@@ -1,0 +1,57 @@
+---
+title: "Initial Set Up"
+author: "Gianni Spiga"
+date: '2022-11-22'
+output: 
+  ioslides_presentation:
+    widescreen: TRUE
+
+---
+
+
+# In the morning
+
+```{r, message = FALSE, warning=FALSE}
+library(survival)
+library(KMsurv)
+library(ggplot2)
+library(ggpubr)
+library(survminer)
+library(plotly)
+library(muhaz)
+library(ggthemes)
+```
+
+## Getting up
+
+```{r, fig.cap="Sample", echo = F}
+data(pneumon)
+ggplotly(ggplot(data = pneumon, aes(x = smoke)) + geom_histogram(stat = "count"))
+```
+## Breakfast
+
+- Eat eggs
+- Drink coffee
+
+# In the evening
+
+## Dinner
+
+- Eat spaghetti
+- Drink wine
+
+---
+
+# Setting Up Info for Analysis
+
+
+
+# Loading in Data
+
+```{r, echo=F}
+data(pneumon)
+head(pneumon)
+
+
+
+```
