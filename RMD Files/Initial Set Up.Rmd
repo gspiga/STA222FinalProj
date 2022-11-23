@@ -71,7 +71,6 @@ std[factor.cols] <- lapply(std[factor.cols], as.factor)
 
 #lapply(std, class)
 
-
 std$race <-
   mapvalues(std$race,
             from = c("W", "B"),
@@ -101,7 +100,7 @@ infect <- std$iinfct
 surv_object <- Surv(time = std$time, event = std$rinfct)
 ```
 
-### EDA
+### Exploratory Data Analysis
 ```{r}
 fig1 <-
   plot_ly(
@@ -125,7 +124,6 @@ fig1 <-
     )
   )
 fig1
-
 
 fig2 <-
   plot_ly(
@@ -151,11 +149,7 @@ fig2 <-
 fig2
 ```
 
-
-### 
-
 ### Kaplan-Meier Curves 
-
 ```{r}
 KMobj <- survfit(surv_object ~ iinfct, data = std)
 KMplot <- ggsurvplot(KMobj) + labs(title = "Kaplan-Meier Curves for Initial Infection Type") 
