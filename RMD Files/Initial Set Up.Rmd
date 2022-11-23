@@ -100,7 +100,12 @@ infect <- std$iinfct
 surv_object <- Surv(time = std$time, event = std$rinfct)
 ```
 
-### Exploratory Data Analysiss
+### Exploratory Data Analysis
+
+Take a look at correlation between symptoms and different infection types.
+
+Is it more common for one type of infection based on type of sex (oral/anal).
+
 ```{r}
 fig1 <-
   plot_ly(
