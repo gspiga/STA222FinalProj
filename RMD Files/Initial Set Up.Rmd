@@ -25,33 +25,8 @@ library(ggthemes)
 # Loading in data
 data(std)
 
-# Checking for NA Values in dataset 
+# Checking for NA Values in data set 
 any(is.na(std))
-
-# 
-# #Check data type for each column
-# sapply(pneumon, class)
-# 
-# # #We turn columns desired into factors
-# # factor.cols <-
-# #   c(
-# #     "hospital",
-# #     "urban",
-# #     "alcohol",
-# #     "smoke",
-# #     "region",
-# #     "poverty",
-# #     "bweight",
-# #     "race",
-# #     "wmonth",
-# #     "sfmonth"
-# #   )
-# # This will turn into factors 
-# #pneumon[factor.cols] <- lapply(pneumon[factor.cols], as.factor)
-# 
-# #Check data conversion
-# str(pneumon)
-# 
 
 factor.cols <-
   c(
