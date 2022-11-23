@@ -25,22 +25,9 @@ library(ggthemes)
 ## Getting up
 
 ```{r, fig.cap="Sample", echo = F}
-data(pneumon)
+#data(pneumon)
 #ggplotly(ggplot(data = pneumon, aes(x = smoke)) + geom_histogram(stat = "count"))
 ```
-## Breakfast
-
-- Eat eggs
-- Drink coffee
-
-# In the evening
-
-## Dinner
-
-- Eat spaghetti
-- Drink wine
-
----
 
 # Setting Up Info for Analysis
 
