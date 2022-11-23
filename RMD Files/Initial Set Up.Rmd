@@ -100,7 +100,7 @@ infect <- std$iinfct
 surv_object <- Surv(time = std$time, event = std$rinfct)
 ```
 
-### Exploratory Data Analysis
+### Exploratory Data Analysiss
 ```{r}
 fig1 <-
   plot_ly(
@@ -111,7 +111,7 @@ fig1 <-
   )
 fig1 <-
   fig1 %>% layout(
-    title = "Percentage of Infection Type/",
+    title = "Percentage of Infection Type",
     xaxis = list(
       showgrid = FALSE,
       zeroline = FALSE,
