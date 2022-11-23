@@ -8,8 +8,6 @@ output:
 
 ---
 
-# In the morning
-
 ```{r, message = FALSE, warning=FALSE}
 library(survival)
 library(KMsurv)
@@ -19,13 +17,6 @@ library(survminer)
 library(plotly)
 library(muhaz)
 library(ggthemes)
-```
-
-## Getting up
-
-```{r, fig.cap="Sample", echo = F}
-#data(pneumon)
-#ggplotly(ggplot(data = pneumon, aes(x = smoke)) + geom_histogram(stat = "count"))
 ```
 
 # Loading in Data
