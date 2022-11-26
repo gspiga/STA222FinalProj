@@ -162,9 +162,9 @@ legend("topleft",c("gonorrhea","chlamydia","both"),col=4:6,lwd=1)}
 
 ```{r}
 NAcurves <- survfit(surv_object ~ iinfct, data = std,type="fleming-harrington")
-{plot(NAcurves,col=1:2,lwd=2,fun="cloglog", ylab = "ln[H(t)]", xlab = "ln(t)")
+{plot(NAcurves,col=1:3,lwd=2,fun="cloglog", ylab = "ln[H(t)]", xlab = "ln(t)")
 title("Complimentary log-log survival vs. log time")
-legend("bottomright",c("gonorrhea","chlamydia","both"),col=1:2,lwd=2)}
+legend("bottomright",c("gonorrhea","chlamydia","both"),col=1:3,lwd=2)}
 ```
 
 
@@ -188,7 +188,7 @@ summary(cox1)
 drop1(cox1,test = "Chisq")
 ```
 
-Drop test indicates that condom may also be significant.
+Drop test indicates that condom may also be significant.  
 
 ```{r}
 cox2<- coxph(surv_object ~ iinfct+condom+vagina+dchexam+yschool, data = std)
@@ -219,10 +219,91 @@ AIC(cox4)
 ```
 
 
+## CODE BELOW: categorical version of yschool and cox5
+```{r}
+cat_yschool = cut(std$yschool, c(-Inf, 7, 12, Inf), labels = c("6-7","8-12","above 12"))
+std['cat_yschool'] = cat_yschool
+
+# re-level to use "8-12" as the reference group since it's survival curve is in between the other two groups
+
+std$cat_yschool = relevel(std$cat_yschool, ref="8-12")
+```
+
+```{r}
+cox5 <- coxph(surv_object ~ iinfct+condom+vagina+dchexam+cat_yschool, data = std)
+
+summary(cox5)
+```
+
+ It seems that dchexam is really at the very edge of being significant at alpha=0.1; might want to drop it for simplicity?
+```{r}
+drop1(cox5, test="Chisq")
+```
+
+
+In cox6 the "discharge at exam" is dropped.
+```{r}
+cox6 <- coxph(surv_object ~ iinfct+condom+vagina+cat_yschool, data = std)
+summary(cox6)
+```
+
+## model checking for cox6
+```{r}
+
+cox6.zph <- cox.zph(cox6)
+
+plot(cox6.zph[1], main="Schoenfeld Residual for Initial Infectoion")
+
+plot(cox6.zph[2], main="Schoenfeld Residual for Condom Use")
+
+plot(cox6.zph[3], main="Schoenfeld Residual for Involvement of Vagina Examination")
+
+plot(cox6.zph[4], main="Schoenfeld Residual for Schooling Years")
+
+```
+```{r}
+# Cox-Snell
+cox6.cs <- std$rinfct-residuals(cox6, type="martingale")
+
+# Cum. Hazard for cox-snell residual
+cox6.cs.surv <- Surv(cox6.cs, std$rinfct)
+cox6.cs.fit <- survfit(cox6.cs.surv~1,type="fleming-harrington")
+
+plot(cox6.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
+abline(0,1, col=2, lwd=2, lty=2)
+title("Cumulative Hazard of Cox-Snell Residuals")
+```
+
+# Should we apply stratification?
+
+```{r}
+cox7 <- coxph(surv_object ~ strata(iinfct) + strata(condom) + vagina + cat_yschool, data = std)
+cox7.cs <- std$rinfct-residuals(cox7, type="martingale")
+
+# Cum. Hazard for cox-snell residual
+cox7.cs.surv <- Surv(cox7.cs, std$rinfct)
+cox7.cs.fit <- survfit(cox7.cs.surv~1,type="fleming-harrington")
+
+plot(cox7.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
+abline(0,1, col=2, lwd=2, lty=2)
+title("Cum. Hazard of Cox-Snell Residuals, strata condom&iinfct")
+
+plot(cox6.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
+abline(0,1, col=2, lwd=2, lty=2)
+title("Cum. Hazard of Cox-Snell Residuals")
+
+
+```
+
+
+
+
+
+
 ## NEED TO CHANGE EVERYTHING FROM HERE DOWN.
 
 ```{r}
-mres <- residuals(cox2, type = "martingale")
+mres <- residuals(cox4, type = "martingale")
 yearslowess <- lowess(std$yschool,mres)
 {plot(std$yschool,mres,xlab="Years at School",ylab="Martingale Residuals")
 lines(yearslowess)
@@ -250,8 +331,6 @@ title("Martingale Residuals vs. Number of Partners")}
 KMcurves1 <- survfit(surv_object ~ dchexam, data = std)
 plot(KMcurves1, col = 1:2, main = "KM Curves for Discharge at Exam")
 ```
-
-
 
 
 
