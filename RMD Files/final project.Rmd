@@ -168,11 +168,14 @@ legend("bottomright",c("gonorrhea","chlamydia","both"),col=1:2,lwd=2)}
 ```
 
 
+# Add hazard ratio plot.
+ 
+ 
 ```{r}
-cox <- coxph(surv_object ~ as.factor(iinfct) , data = std)
+cox <- coxph(surv_object ~ iinfct, data = std)
 summary(cox)
 hodg.zph <- cox.zph(cox)
-plot(hodg.zph, main = "Schoenfeld Residuals for Treatment Type")
+plot(hodg.zph, main = "Schoenfeld Residuals for Initial Infection Type")
 test.ph <- cox.zph(cox)
 test.ph
 ```
@@ -180,46 +183,79 @@ test.ph
 P-value here is large, so we do not have a violation of proportional hazards.
 
 ```{r}
-cox1<- coxph(surv_object ~ as.factor(iinfct)+ as.factor(marital)+ as.factor(race)+ as.factor(os12m)+ as.factor(os30d)+ as.factor(rs12m)+ as.factor(rs30d)+ as.factor(abdpain)+ as.factor(discharge)+ as.factor(dysuria)+ as.factor(condom)+ as.factor(itch)+ as.factor(lesion)+ as.factor(rash)+ as.factor(lymph)+ as.factor(vagina)+ as.factor(dchexam)+ as.factor(abnode)+age+yschool+npartner , data = std)
+cox1 <- coxph(surv_object~iinfct+marital+race+os12m+os30d+rs12m+rs30d+abdpain+ discharge+dysuria+condom+itch+lesion+rash+lymph+vagina+dchexam+abnode+age+yschool+npartner, data = std)
 summary(cox1)
-
+drop1(cox1,test = "Chisq")
 ```
+
+Drop test indicates that condom may also be significant.
 
 ```{r}
-cox2<- coxph(surv_object ~ as.factor(iinfct)+as.factor(vagina)+ as.factor(dchexam)+yschool, data = std)
+cox2<- coxph(surv_object ~ iinfct+condom+vagina+dchexam+yschool, data = std)
 summary(cox2)
+cox3<- coxph(surv_object ~ iinfct+vagina+dchexam+yschool, data = std)
+summary(cox3)
+
+AIC(cox2)
+AIC(cox3)
+
+# AIC indicates that the model with condom is a better fit.
+
+std$condom <-
+  mapvalues(
+    std$condom,
+    from = c("always", "sometime", "never"),
+    to = c("use", "use", "never")
+  )
+
+cox4<- coxph(surv_object ~ iinfct+condom+vagina+dchexam+yschool, data = std)
+summary(cox4)
+drop1(cox4)
+
+AIC(cox4)
+
+# AIC is also now lower, so this will be our model.
+
 ```
+
+
+## NEED TO CHANGE EVERYTHING FROM HERE DOWN.
 
 ```{r}
 mres <- residuals(cox2, type = "martingale")
-methadonelowess <- lowess(std$yschool,mres)
-{plot(std$yschool,mres,xlab="year at school",ylab="Martingale Residuals")
-lines(methadonelowess)
-title("Martingale Residuals vs. methadone")}
+yearslowess <- lowess(std$yschool,mres)
+{plot(std$yschool,mres,xlab="Years at School",ylab="Martingale Residuals")
+lines(yearslowess)
+title("Martingale Residuals vs. Years of School")}
 ```
 
 ```{r}
 mres1 <- residuals(cox2, type = "martingale")
-methadonelowess1 <- lowess(std$age,mres)
+agelowess <- lowess(std$age,mres)
 {plot(std$age,mres1,xlab="age",ylab="Martingale Residuals")
-lines(methadonelowess1)
-title("Martingale Residuals vs. methadone")}
+lines(agelowess)
+title("Martingale Residuals vs. Age")}
 ```
 
 ```{r}
 mres2 <- residuals(cox2, type = "martingale")
-methadonelowess2 <- lowess(std$npartner,mres)
+nlowess <- lowess(std$npartner,mres)
 {plot(std$npartner,mres2,xlab="npartner",ylab="Martingale Residuals")
-lines(methadonelowess2)
-title("Martingale Residuals vs. methadone")}
+lines(nlowess)
+title("Martingale Residuals vs. Number of Partners")}
 ```
 
 
 ```{r}
 KMcurves1 <- survfit(surv_object ~ dchexam, data = std)
-plot(KMcurves1, col = 1:2, main = "KM Curves for different different discharge at exam")
+plot(KMcurves1, col = 1:2, main = "KM Curves for Discharge at Exam")
 ```
 
+
+
+
+
+# Need to edit below now that we might be keeping condom.
 
 ### (4) Run the usual suite of model checking methods and report any interesting findings. Possibly alter the model as a result.
 ```{r}
@@ -242,10 +278,6 @@ plot(test.ph[3], main = "Schoenfeld Residuals for whether discharge or not at ex
 plot(test.ph[4], main = "Schoenfeld Residuals for year at school")
 ```
 
-```{r}
-test.ph <- cox.zph(cox2)
-test.ph
-```
 
 ```{r}
 correlations <- apply(X = test.ph$y, MARGIN = 2, FUN = function(x) {cor.test(x, test.ph$x, method = "spearman")})
