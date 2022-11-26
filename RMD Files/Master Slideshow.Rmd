@@ -1,12 +1,18 @@
 ---
-title: "Initial Set Up"
-author: "Gianni Spiga"
-date: '2022-11-22'
-output: 
+title: "Analysis on Reinfection of Sexually Transmitted Diseases"
+author: "Yichu Chen, Gu Gong, Kate Jones, Gianni Spiga"
+date: '2022-11-29'
+output:
+  slidy_presentation: 
+    highlight: "espresso"
+    df_print: paged
   ioslides_presentation:
-    widescreen: TRUE
-
+    widescreen: yes
 ---
+
+# Libraries Used
+
+- Our analysis for this presenation would not have been possible without these libaries: 
 
 ```{r, message = FALSE, warning=FALSE}
 library(survival)
@@ -17,13 +23,18 @@ library(survminer)
 library(plotly)
 library(muhaz)
 library(ggthemes)
+library(plyr)
 ```
 
-# Loading in Data
+ Loading in Data
+```{r}
+data(std)
+std
+```
 
 ```{r, echo=F}
 # Loading in data
-data(std)
+#data(std)
 
 # Checking for NA Values in data set 
 any(is.na(std))
@@ -99,13 +110,13 @@ infect <- std$iinfct
 surv_object <- Surv(time = std$time, event = std$rinfct)
 ```
 
-### Exploratory Data Analysis
+# Exploratory Data Analysis
 
 Take a look at correlation between symptoms and different infection types.
 
 Is it more common for one type of infection based on type of sex (oral/anal).
 
-```{r}
+```{r, echo = F}
 fig1 <-
   plot_ly(
     data = data.frame(table(std$iinfct)),
@@ -153,11 +164,47 @@ fig2 <-
 fig2
 ```
 
-### Kaplan-Meier Curves 
-```{r}
+# Kaplan-Meier Curves 
+```{r, echo = F, warning = F}
 KMobj <- survfit(surv_object ~ iinfct, data = std)
-KMplot <- ggsurvplot(KMobj) + labs(title = "Kaplan-Meier Curves for Initial Infection Type") 
+KMplot <-
+  ggsurvplot(KMobj,
+             palette = c("#daed64", "#6495ed", "#ed7864"),
+             ggtheme = theme_fivethirtyeight()) + labs(title = "Kaplan-Meier Curves for Initial Infection Type")
 ggplotly(KMplot[[1]])
 
+survdiff(surv_object ~ iinfct, data = std)
+```
 
+# Cumulative Hazards and CLogLog
+
+```{r, echo = F, warning = F}
+# {plot(survfit(surv_object ~ iinfct, data = std),col=4:6,lwd=1,fun="cumhaz")
+# title("Cumulative Hazard for intital infection")
+# legend("topleft",c("gonorrhea","chlamydia","both"),col=4:6,lwd=1)}
+
+# Interactive plot 
+# Cumulative Hazard 
+cumHazPlot <-
+  ggsurvplot(
+    KMobj,
+    fun = "cumhaz",
+    conf.int = FALSE,
+    palette = c("#daed64", "#6495ed", "#ed7864"),
+    ggtheme =theme_fivethirtyeight()
+  ) + ggtitle("Cumulative Hazard for Initial Infection Type")
+
+ggplotly(cumHazPlot$plot)
+
+
+# Complimentary Log-Log 
+cLogLogPlot <-
+  ggsurvplot(
+    KMobj,
+    fun = "cloglog",
+    palette = c("#daed64", "#6495ed", "#ed7864"),
+    ggtheme = theme_fivethirtyeight()
+  ) + ggtitle("Complimentary Log-Log for Initial Infection Type") 
+
+ggplotly(cLogLogPlot[[1]])
 ```
