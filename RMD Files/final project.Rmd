@@ -5,7 +5,11 @@ library(survival)
 library(KMsurv)
 library(ggplot2)
 library(ggpubr)
+library(survminer)
 library(muhaz)
+library(plyr)
+library(plotly)
+library(ggthemes)
 ```
 
 ```{r}
@@ -159,7 +163,7 @@ legend("topleft",c("gonorrhea","chlamydia","both"),col=4:6,lwd=1)}
 ```{r}
 NAcurves <- survfit(surv_object ~ iinfct, data = std,type="fleming-harrington")
 {plot(NAcurves,col=1:2,lwd=2,fun="cloglog", ylab = "ln[H(t)]", xlab = "ln(t)")
-title("Complimentary log-log survival vs. log time.")
+title("Complimentary log-log survival vs. log time")
 legend("bottomright",c("gonorrhea","chlamydia","both"),col=1:2,lwd=2)}
 ```
 
@@ -167,8 +171,13 @@ legend("bottomright",c("gonorrhea","chlamydia","both"),col=1:2,lwd=2)}
 ```{r}
 cox <- coxph(surv_object ~ as.factor(iinfct) , data = std)
 summary(cox)
+hodg.zph <- cox.zph(cox)
+plot(hodg.zph, main = "Schoenfeld Residuals for Treatment Type")
+test.ph <- cox.zph(cox)
+test.ph
 ```
 
+P-value here is large, so we do not have a violation of proportional hazards.
 
 ```{r}
 cox1<- coxph(surv_object ~ as.factor(iinfct)+ as.factor(marital)+ as.factor(race)+ as.factor(os12m)+ as.factor(os30d)+ as.factor(rs12m)+ as.factor(rs30d)+ as.factor(abdpain)+ as.factor(discharge)+ as.factor(dysuria)+ as.factor(condom)+ as.factor(itch)+ as.factor(lesion)+ as.factor(rash)+ as.factor(lymph)+ as.factor(vagina)+ as.factor(dchexam)+ as.factor(abnode)+age+yschool+npartner , data = std)

@@ -93,8 +93,7 @@ std$condom <-
     from = c("1", "2", "3"),
     to = c("always", "sometime", "never")
   )
-
-
+summary(std$race)
 # Building the Survival Object 
 infect <- std$iinfct
 surv_object <- Surv(time = std$time, event = std$rinfct)
@@ -159,4 +158,6 @@ fig2
 KMobj <- survfit(surv_object ~ iinfct, data = std)
 KMplot <- ggsurvplot(KMobj) + labs(title = "Kaplan-Meier Curves for Initial Infection Type") 
 ggplotly(KMplot[[1]])
+
+
 ```
