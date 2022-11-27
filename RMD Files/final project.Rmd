@@ -183,9 +183,15 @@ test.ph
 P-value here is large, so we do not have a violation of proportional hazards.
 
 ```{r}
-cox1 <- coxph(surv_object~iinfct+marital+race+os12m+os30d+rs12m+rs30d+abdpain+ discharge+dysuria+condom+itch+lesion+rash+lymph+vagina+dchexam+abnode+age+yschool+npartner, data = std)
+cox1 <-
+  coxph(
+    surv_object ~ iinfct + marital + race + os12m + os30d + rs12m + rs30d + abdpain + discharge + dysuria + condom + itch + lesion + rash + lymph + vagina + dchexam + abnode + age + yschool + npartner,
+    data = std
+  )
+
+#cox1 <- coxph(surv_object ~ ., data = std)
 summary(cox1)
-drop1(cox1,test = "Chisq")
+drop1(cox1, test = "Chisq")
 ```
 
 Drop test indicates that condom may also be significant.  

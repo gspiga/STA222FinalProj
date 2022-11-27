@@ -104,7 +104,8 @@ std$condom <-
     from = c("1", "2", "3"),
     to = c("always", "sometime", "never")
   )
-summary(std$race)
+
+
 # Building the Survival Object 
 infect <- std$iinfct
 surv_object <- Surv(time = std$time, event = std$rinfct)
@@ -172,7 +173,6 @@ KMplot <-
              palette = c("#daed64", "#6495ed", "#ed7864"),
              ggtheme = theme_fivethirtyeight()) + labs(title = "Kaplan-Meier Curves for Initial Infection Type")
 ggplotly(KMplot[[1]])
-
 survdiff(surv_object ~ iinfct, data = std)
 ```
 
@@ -207,4 +207,33 @@ cLogLogPlot <-
   ) + ggtitle("Complimentary Log-Log for Initial Infection Type") 
 
 ggplotly(cLogLogPlot[[1]])
+```
+
+# Schoenfield Residuals for Initial Infection
+
+- P-value here is large, so we do not have a violation of proportional hazards.
+
+```{r, echo = F}
+cox <- coxph(surv_object ~ iinfct, data = std)
+summary(cox)
+hodg.zph <- cox.zph(cox)
+# plot(hodg.zph, main = "Schoenfeld Residuals for Initial Infection Type")
+
+#For initial infection
+ggcoxzph(hodg.zph[1], se = FALSE, font.main = 12, ggtheme = theme_fivethirtyeight(), point.col = "#6495ed")
+```
+
+# Building a full model 
+
+```{r, echo = T}
+cox1 <-
+  coxph(
+    surv_object ~ iinfct + marital + race + os12m + os30d + rs12m + rs30d + abdpain + discharge + dysuria + condom + itch + lesion + rash + lymph + vagina + dchexam + abnode + age + yschool + npartner,
+    data = std
+  )
+```
+```{r, echo = F}
+summary(cox1)
+drop1(cox1, test = "Chisq")
+
 ```
