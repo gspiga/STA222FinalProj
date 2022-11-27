@@ -26,7 +26,6 @@ library(ggthemes)
 library(plyr)
 ```
 
- Loading in Data
 ```{r}
 data(std)
 std
@@ -164,8 +163,12 @@ fig2 <-
   )
 fig2
 ```
+# Checking Proportionality 
 
-# Kaplan-Meier Curves 
+- In order to build Cox model, we need to check that the data meets our proportional hazards assumptions. We will check this with *Kaplan-Meier Curves* and *Hazard Ratios*.
+
+## Kaplan-Meier Curves 
+
 ```{r, echo = F, warning = F}
 KMobj <- survfit(surv_object ~ iinfct, data = std)
 KMplot <-
@@ -175,8 +178,32 @@ KMplot <-
 ggplotly(KMplot[[1]])
 survdiff(surv_object ~ iinfct, data = std)
 ```
+- Since we see no intersection in our Kaplan-Meier Curves for each type of initial infection, we can concur proportional hazards hold. 
 
-# Cumulative Hazards and CLogLog
+## Hazard Ratios 
+```{r, echo = F}
+timevec <- 1:1500
+
+#First hazard (Gonorrhea)
+sf1 <- stepfun(KMobj[1]$time, c(1, KMobj[1]$surv))
+
+#Second hazard (Chlamydia)
+sf2 <- stepfun(KMobj[2]$time, c(1, KMobj[2]$surv))
+
+#Third hazard (Both)
+sf3 <- stepfun(KMobj[3]$time, c(1, KMobj[3]$surv))
+
+#now we can find the cumulative hazards
+cumhaz1 <- -log(sf1(timevec))
+cumhaz2 <- -log(sf2(timevec))
+cumhaz3 <- -log(sf3(timevec))
+
+#Hazard Ratio
+ggplotly(
+  ggplot(ggtheme = theme_fivethirtyeight()) + aes(x = timevec) + geom_line(aes(y = cumhaz1 / cumhaz2), col = "#daed64") + geom_line(aes(y = cumhaz3 / cumhaz1), col = "#6495ed") + geom_line(aes(y = cumhaz3 / cumhaz2), col = "#ed7864") +  labs(x = "Time", y = "Hazard Ratio", title = "Hazard Ratios for Three Initial Infections")
+)
+```
+## Cumulative Hazards and CLogLog
 
 ```{r, echo = F, warning = F}
 # {plot(survfit(surv_object ~ iinfct, data = std),col=4:6,lwd=1,fun="cumhaz")
@@ -224,16 +251,19 @@ ggcoxzph(hodg.zph[1], se = FALSE, font.main = 12, ggtheme = theme_fivethirtyeigh
 ```
 
 # Building a full model 
-
+- To better understand the influences on reinfection, we build a cox Proportional Hazard Model with all of the variables in the data 
 ```{r, echo = T}
 cox1 <-
   coxph(
-    surv_object ~ iinfct + marital + race + os12m + os30d + rs12m + rs30d + abdpain + discharge + dysuria + condom + itch + lesion + rash + lymph + vagina + dchexam + abnode + age + yschool + npartner,
+    surv_object ~ iinfct + marital + race + os12m + os30d +
+      rs12m + rs30d + abdpain + discharge + dysuria + condom + 
+      itch + lesion + rash + lymph + vagina + dchexam + abnode +
+      age + yschool + npartner,
     data = std
   )
 ```
+- We then use the drop1() function to examine how the dropping of each variable influences the AIC of the model. 
 ```{r, echo = F}
-summary(cox1)
+#summary(cox1)
 drop1(cox1, test = "Chisq")
-
 ```
