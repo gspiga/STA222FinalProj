@@ -171,7 +171,8 @@ cumhaz3 <- -log(sf3(timevec))
 
 #Hazard Ratio
 ggplotly(
-  ggplot(ggtheme = theme_fivethirtyeight()) + aes(x = timevec) + geom_line(aes(y = cumhaz1 / cumhaz2), col = "#daed64") + geom_line(aes(y = cumhaz3 / cumhaz1), col = "#6495ed") + geom_line(aes(y = cumhaz3 / cumhaz2), col = "#ed7864") + ggtitle("Hazard Ratios for Three Initial Infections") + labs(x = "Time", y = "Hazard Ratio"))
+  ggplot(ggtheme = theme_fivethirtyeight()) + aes(x = timevec) + geom_line(aes(y = cumhaz1 / cumhaz2), col = "#daed64") + geom_line(aes(y = cumhaz3 / cumhaz1), col = "#6495ed") + geom_line(aes(y = cumhaz3 / cumhaz2), col = "#ed7864") +  labs(x = "Time", y = "Hazard Ratio", title = "Hazard Ratios for Three Initial Infections")
+)
 
 ```
 
