@@ -17,6 +17,25 @@ library(ggthemes)
 data(std)
 # Checking for NA Values in data set 
 any(is.na(std))
+
+
+
+# add number of symptoms column
+symptoms <- c("itch","lesion","rash","lymph", "abdpain","discharge","dysuria")
+num_symptoms = rowSums(std[,symptoms])
+num_symptoms <-
+  mapvalues(
+    num_symptoms,
+    from = c(0,1,2,3,4,5),
+    to = c("0","1","2",">2",">2",">2")
+  )
+std["num_symptoms"] = num_symptoms
+std$num_symptoms = as.factor(std$num_symptoms)
+std$num_symptoms = relevel(std$num_symptoms, ref="0")
+
+
+
+
 factor.cols <-
   c(
     "race",
@@ -295,6 +314,47 @@ title("Cum. Hazard of Cox-Snell Residuals")
 
 ```
 
+```{r}
+cox6b <- coxph(surv_object ~ iinfct + condom + vagina + yschool, data = std)
+cox6b.cs <- std$rinfct-residuals(cox6b, type="martingale")
+
+# Cum. Hazard for cox-snell residual
+cox6b.cs.surv <- Surv(cox6b.cs, std$rinfct)
+cox6b.cs.fit <- survfit(cox6b.cs.surv~1,type="fleming-harrington")
+
+plot(cox6b.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
+abline(0,1, col=2, lwd=2, lty=2)
+title("Continuous yschool")
+
+plot(cox6.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
+abline(0,1, col=2, lwd=2, lty=2)
+title("Categorical yschool")
+
+```
+# number of symptoms added
+
+```{r}
+cox8 <- coxph(surv_object ~ iinfct+condom+vagina+cat_yschool+num_symptoms, data = std)
+summary(cox8)
+```
+
+```{r}
+cox8 <- coxph(surv_object ~ strata(iinfct) + strata(condom) + vagina + cat_yschool + num_symptoms, data = std)
+cox8.cs <- std$rinfct-residuals(cox8, type="martingale")
+
+# Cum. Hazard for cox-snell residual
+cox8.cs.surv <- Surv(cox8.cs, std$rinfct)
+cox8.cs.fit <- survfit(cox8.cs.surv~1,type="fleming-harrington")
+
+plot(cox8.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
+abline(0,1, col=2, lwd=2, lty=2)
+title("Cum. Hazard of Cox-Snell Residuals with num symptoms")
+
+plot(cox7.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
+abline(0,1, col=2, lwd=2, lty=2)
+title("Cum. Hazard of Cox-Snell Residuals without num symptoms")
+
+```
 
 
 
