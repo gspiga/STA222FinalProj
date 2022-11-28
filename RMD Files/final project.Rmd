@@ -156,6 +156,7 @@ fig2 <-
   )
 fig2
 ```
+## Checking Proportionality 
 
 ### Kaplan-Meier Curves 
 ```{r}
@@ -168,6 +169,30 @@ ggplotly(KMplot[[1]])
 
 ```{r}
 print(survdiff(surv_object ~ iinfct, data = std))
+```
+# Hazard Ratio for Initial Infections 
+```{r}
+timevec <- 1:1500
+
+#First hazard (Gonorrhea)
+sf1 <- stepfun(KMobj[1]$time, c(1, KMobj[1]$surv))
+
+#Second hazard (Chlamydia)
+sf2 <- stepfun(KMobj[2]$time, c(1, KMobj[2]$surv))
+
+#Third hazard (Both)
+sf3 <- stepfun(KMobj[3]$time, c(1, KMobj[3]$surv))
+
+#now we can find the cumulative hazards
+cumhaz1 <- -log(sf1(timevec))
+cumhaz2 <- -log(sf2(timevec))
+cumhaz3 <- -log(sf3(timevec))
+
+#Hazard Ratio
+ggplotly(
+  ggplot(ggtheme = theme_fivethirtyeight()) + aes(x = timevec) + geom_line(aes(y = cumhaz1 / cumhaz2), col = "#daed64") + geom_line(aes(y = cumhaz3 / cumhaz1), col = "#6495ed") + geom_line(aes(y = cumhaz3 / cumhaz2), col = "#ed7864") +  labs(x = "Time", y = "Hazard Ratio", title = "Hazard Ratios for Three Initial Infections")
+)
+
 ```
 
 
@@ -182,7 +207,7 @@ legend("topleft",c("gonorrhea","chlamydia","both"),col=4:6,lwd=1)}
 ```{r}
 NAcurves <- survfit(surv_object ~ iinfct, data = std,type="fleming-harrington")
 {plot(NAcurves,col=1:3,lwd=2,fun="cloglog", ylab = "ln[H(t)]", xlab = "ln(t)")
-title("Complimentary log-log survival vs. log time")
+title("Complimentary log-log survival")
 legend("bottomright",c("gonorrhea","chlamydia","both"),col=1:3,lwd=2)}
 ```
 
@@ -202,9 +227,15 @@ test.ph
 P-value here is large, so we do not have a violation of proportional hazards.
 
 ```{r}
-cox1 <- coxph(surv_object~iinfct+marital+race+os12m+os30d+rs12m+rs30d+abdpain+ discharge+dysuria+condom+itch+lesion+rash+lymph+vagina+dchexam+abnode+age+yschool+npartner, data = std)
+cox1 <-
+  coxph(
+    surv_object ~ iinfct + marital + race + os12m + os30d + rs12m + rs30d + abdpain + discharge + dysuria + condom + itch + lesion + rash + lymph + vagina + dchexam + abnode + age + yschool + npartner,
+    data = std
+  )
+
+#cox1 <- coxph(surv_object ~ ., data = std)
 summary(cox1)
-drop1(cox1,test = "Chisq")
+drop1(cox1, test = "Chisq")
 ```
 
 Drop test indicates that condom may also be significant.  
@@ -310,8 +341,6 @@ title("Cum. Hazard of Cox-Snell Residuals, strata condom&iinfct")
 plot(cox6.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
 abline(0,1, col=2, lwd=2, lty=2)
 title("Cum. Hazard of Cox-Snell Residuals")
-
-
 ```
 
 ```{r}
@@ -368,6 +397,20 @@ yearslowess <- lowess(std$yschool,mres)
 {plot(std$yschool,mres,xlab="Years at School",ylab="Martingale Residuals")
 lines(yearslowess)
 title("Martingale Residuals vs. Years of School")}
+
+
+ggplotly(
+  ggplot() + aes(std$yschool, mres) + geom_point(col = "#FFA000") + labs(x = "Years at School", y = "Martingale Residuals", title = "Martingale Residuals vs. Years of School") + geom_line(data = as.data.frame(yearslowess), aes(x = x, y = y), col = "#000000") + theme_fivethirtyeight()
+)
+```
+```{r}
+# This was uneeded =
+mres_Condom <- residuals(cox2, type = "martingale")
+yearslowess <- lowess(std$yschool,mres_Condom)
+{plot(std$condom,mres_Condom,xlab="Years at School",ylab="Martingale Residuals")
+lines(yearslowess)
+title("Martingale Residuals vs. Condom")}
+
 ```
 
 ```{r}
@@ -398,7 +441,11 @@ plot(KMcurves1, col = 1:2, main = "KM Curves for Discharge at Exam")
 
 ### (4) Run the usual suite of model checking methods and report any interesting findings. Possibly alter the model as a result.
 ```{r}
-test.ph <- cox.zph(cox2)
+# test.ph <- cox.zph(cox2)
+# test.ph
+
+
+test.ph <- cox.zph(cox4)
 test.ph
 ```
 ```{r}
@@ -437,11 +484,17 @@ title("Cumulative Hazard of Cox-Snell Residuals")}
 ```
 
 ```{r}
-b.mart <- residuals(cox2,type="martingale")
-b.dev <- residuals(cox2,type="deviance")
-b.dfb <- residuals(cox2,type="dfbeta")
+# b.mart <- residuals(cox2,type="martingale")
+# b.dev <- residuals(cox2,type="deviance")
+# b.dfb <- residuals(cox2,type="dfbeta")
+# 
+# b.preds <- predict(cox2)
 
-b.preds <- predict(cox2)
+b.mart <- residuals(cox4,type="martingale")
+b.dev <- residuals(cox4,type="deviance")
+b.dfb <- residuals(cox4,type="dfbeta")
+
+b.preds <- predict(cox4)
 {plot(b.preds,b.mart,xlab="Linear Predictor",
      ylab="Martingale Residual", ylim = c(-2,2), pch = 19, cex = 0.5)
 text(b.preds,b.mart)
