@@ -375,6 +375,9 @@ title("Cumulative Hazard of Cox-Snell Residuals")
 test.ph <- cox.zph(cox.model)
 test.ph
 ```
+
+From the output results, the P values of the three covariates are all greater than 0.05, indicating that each variable satisfies the PH test, and the overall test P value of the model 0.4 is not statistically significant, so we believe that the model as a whole satisfies the PH test.
+
 ```{r}
 plot(test.ph[1], main = "Schoenfeld Residuals for differernt initial infection types")
 ```
@@ -384,7 +387,7 @@ plot(test.ph[2], main = "Schoenfeld Residuals for whether using condom or not")
 ```
 
 ```{r}
-plot(test.ph[3], main = "Schoenfeld Residuals for whether vagina or not")
+plot(test.ph[3], main = "Schoenfeld Residuals for whether vagina involvement or not")
 ```
 
 ```{r}
@@ -404,6 +407,8 @@ plot(test.ph[6], main = "Schoenfeld Residuals for whether having Presence of abd
 correlations <- apply(X = test.ph$y, MARGIN = 2, FUN = function(x) {cor.test(x, test.ph$x, method = "spearman")})
 correlations
 ```
+
+And based on the correlation test, all variables induce no non-proportionality. That means we should include both variables in our model.
 
 ```{r}
 residuals <- residuals(cox.model,type="martingale")
@@ -451,10 +456,10 @@ title("dfbeta Values by Observation Number for condoms using or not")}
 ```
 
 ```{r}
-{plot(b.dfb[,3],xlab="Observation Number",ylab="dfbeta for vagina", 
+{plot(b.dfb[,3],xlab="Observation Number",ylab="dfbeta for vagina involvement", 
      ylim=c(-.2,.2), pch = 19, cex = 0.5)
 text(b.dfb[,3])
-title("dfbeta Values by Observation Number for vagina or not")}
+title("dfbeta Values by Observation Number for vagina involvement or not")}
 ```
 
 ```{r}
@@ -475,6 +480,46 @@ title("dfbeta Values by Observation Order for oral sex last 30 days or not")}
 text(b.dfb[,6])
 title("dfbeta Values by Observation Order for Presence of abdominal pain")}
 ```
+
+Based on the plot above, we can get that the outliers and influencial points in this data as below:
+
+Martingale Residuals 366, 66, 222
+
+Deviance Residuals - 366, 820
+
+initial infection Influence - 66,366
+
+Condom using or not Influence - 366,66
+
+vagina involvement or not Influence - 93, 699, 41
+
+categorized year at school Influence - 93, 699, 41
+
+oral sex last 30 days or not Influence - 849,41,473
+
+Presence of abdominal pain Influence - 473,81,169,660
+
+The most important observations to examine seem to be  66,366,93,699,41,473
+
+```{r}
+unusualpts <- c( 66,366,93,699,41,473)
+std[unusualpts,]
+```
+
+Based on the result, we can see that all of them are not having oral sex last 30 days and have a relatively high education level based on their year at school, which are indicators for not having reinfection of std.
+
+Person 66: gonorrhea, having Presence of abdominal pain, sometimes using condom
+
+Person 366: gonorrhea, sometimes using condom
+
+Person 93: both, having Presence of abdominal pain, always using condom
+
+Person 699: both, always using condom
+
+Person 41: 	chlamydia, always using condom, getting vagina involvement
+
+Person 473: chlamydia, sometimes using condom, getting vagina involvement
+
 
 
 
