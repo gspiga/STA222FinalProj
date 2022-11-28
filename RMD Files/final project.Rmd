@@ -18,8 +18,6 @@ data(std)
 # Checking for NA Values in data set 
 any(is.na(std))
 
-
-
 # add number of symptoms column
 symptoms <- c("itch","lesion","rash","lymph", "abdpain","discharge","dysuria")
 num_symptoms = rowSums(std[,symptoms])
@@ -32,9 +30,6 @@ num_symptoms <-
 std["num_symptoms"] = num_symptoms
 std$num_symptoms = as.factor(std$num_symptoms)
 std$num_symptoms = relevel(std$num_symptoms, ref="0")
-
-
-
 
 factor.cols <-
   c(
@@ -107,7 +102,6 @@ surv_object <- Surv(time = std$time, event = std$rinfct)
 ### Exploratory Data Analysis
 
 Take a look at correlation between symptoms and different infection types.
-
 Is it more common for one type of infection based on type of sex (oral/anal).
 
 ```{r}
