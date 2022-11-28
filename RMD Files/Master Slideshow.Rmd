@@ -267,3 +267,14 @@ cox1 <-
 #summary(cox1)
 drop1(cox1, test = "Chisq")
 ```
+
+
+# Simplifying the Model
+
+## Tranformation of Variables
+
+# Residuals 
+
+## Outliers 
+
+# In Conclusion 
