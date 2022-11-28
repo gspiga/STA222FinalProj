@@ -170,6 +170,24 @@ ggplotly(KMplot[[1]])
 ```{r}
 print(survdiff(surv_object ~ iinfct, data = std))
 ```
+
+
+### Plot the cumulative hazards vs. time and the complimentary log-log survival vs. log time.
+
+```{r}
+{plot(survfit(surv_object ~ iinfct, data = std),col=4:6,lwd=1,fun="cumhaz")
+title("Cumulative Hazard for intital infection")
+legend("topleft",c("gonorrhea","chlamydia","both"),col=4:6,lwd=1)}
+```
+
+```{r}
+NAcurves <- survfit(surv_object ~ iinfct, data = std,type="fleming-harrington")
+{plot(NAcurves,col=1:3,lwd=2,fun="cloglog", ylab = "ln[H(t)]", xlab = "ln(t)")
+title("Complimentary log-log survival")
+legend("bottomright",c("gonorrhea","chlamydia","both"),col=1:3,lwd=2)}
+```
+
+
 # Hazard Ratio for Initial Infections 
 ```{r}
 timevec <- 1:1500
@@ -195,26 +213,6 @@ ggplotly(
 
 ```
 
-
-### Plot the cumulative hazards vs. time and the complimentary log-log survival vs. log time.
-
-```{r}
-{plot(survfit(surv_object ~ iinfct, data = std),col=4:6,lwd=1,fun="cumhaz")
-title("Cumulative Hazard for intital infection")
-legend("topleft",c("gonorrhea","chlamydia","both"),col=4:6,lwd=1)}
-```
-
-```{r}
-NAcurves <- survfit(surv_object ~ iinfct, data = std,type="fleming-harrington")
-{plot(NAcurves,col=1:3,lwd=2,fun="cloglog", ylab = "ln[H(t)]", xlab = "ln(t)")
-title("Complimentary log-log survival")
-legend("bottomright",c("gonorrhea","chlamydia","both"),col=1:3,lwd=2)}
-```
-
-
-# Add hazard ratio plot.
- 
- 
 ```{r}
 cox <- coxph(surv_object ~ iinfct, data = std)
 summary(cox)
