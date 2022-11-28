@@ -320,7 +320,9 @@ hodg.zph <- cox.zph(cox)
 ggcoxzph(hodg.zph[1], se = FALSE, font.main = 12, ggtheme = theme_fivethirtyeight(), point.col = "#6495ed")
 ```
 
-# Building a full model 
+# Finding the Best Model
+
+## The Full model 
 - To better understand the influences on reinfection, we build a cox Proportional Hazard Model with all of the variables in the data 
 ```{r, echo = T}
 cox1 <-
@@ -339,7 +341,10 @@ drop1(cox1, test = "Chisq")
 ```
 
 
-# Simplifying the Model
+## Simplifying the Model
+
+- From here, the goal is to remove extraneous variables and include models that are statistically significant and lower the AIC of the model. 
+- We considered stratification, however, we found no signficant difference between a stratified and non-stratifed model via the Cox Snell Residuals, which measure the overall fit of a Cox model. This coincides with our conclusion earlier that the proportional hazards assumption was not violated. 
 
 ## Tranformation of Variables
 
