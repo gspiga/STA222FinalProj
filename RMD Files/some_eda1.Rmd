@@ -110,7 +110,6 @@ surv_object <- Surv(time = std$time, event = std$rinfct)
 ```
 
 ```{r}
-
 std0 = std0[which(std0$rinfct=="1"),]
 std0$iinfct <-
   mapvalues(

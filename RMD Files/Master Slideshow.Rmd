@@ -24,6 +24,7 @@ library(plotly)
 library(muhaz)
 library(ggthemes)
 library(plyr)
+library(tidyr)
 ```
 
 ```{r}
@@ -34,7 +35,7 @@ std
 ```{r, echo=F}
 # Loading in data
 #data(std)
-
+std0 = std
 # Checking for NA Values in data set 
 any(is.na(std))
 
@@ -106,15 +107,25 @@ std$condom <-
 
 
 # Building the Survival Object 
-infect <- std$iinfct
+#infect <- std$iinfct
 surv_object <- Surv(time = std$time, event = std$rinfct)
 ```
 
 # Exploratory Data Analysis
 
-Take a look at correlation between symptoms and different infection types.
+- Our first step is to visualize a few of the variables in our data: 
 
-Is it more common for one type of infection based on type of sex (oral/anal).
+```{r, echo = F}
+# ggplotly(
+#   ggplot(std, aes(x = iinfct, fill = iinfct)) +
+#     geom_bar(stat = "count", position = "dodge") +
+#     # scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+#     labs(title = "Number of Reinfection For Each Initial Infection Type",
+#          x = "Initial Infection Type", y = "Count")
+# )
+```
+
+- Below we create two pie charts. The first shows the percentages for each type of initial infection. The second shows the percentages for the number of partners each patient had. 
 
 ```{r, echo = F}
 fig1 <-
@@ -163,6 +174,65 @@ fig2 <-
   )
 fig2
 ```
+- We also are interested in the frequency of symptoms for each patient, relative to their initial infection. 
+
+```{r, echo = F, message = F}
+# From some_eda1 file
+std0 = std0[which(std0$rinfct == "1"), ]
+std0$iinfct <-
+  mapvalues(
+    std0$iinfct,
+    from = c("1", "2", "3"),
+    to = c("gonorrhea", "chlamydia", "both")
+  )
+# Symptom Percentages based on Initial Infection
+
+symptoms <-
+  c("itch",
+    "lesion",
+    "rash",
+    "lymph",
+    "abdpain",
+    "discharge",
+    "dysuria")
+ii_sub1 <- std0[which(std0$iinfct == "gonorrhea"), symptoms]
+ii_sub2 <- std0[which(std0$iinfct == "chlamydia"), symptoms]
+ii_sub3 <- std0[which(std0$iinfct == "both"), symptoms]
+
+ii_sub1 <- colSums((ii_sub1)) / nrow(ii_sub1)
+ii_sub2 <- colSums((ii_sub2)) / nrow(ii_sub2)
+ii_sub3 <- colSums((ii_sub3)) / nrow(ii_sub3)
+
+ii_sub1["infection"] = "gonorrhea"
+ii_sub2["infection"] = "chlamydia"
+ii_sub3["infection"] = "both"
+
+ii_symptom <- as.data.frame(rbind(ii_sub1, ii_sub2, ii_sub3))
+
+ii_symptom_long <-
+  pivot_longer(ii_symptom,
+               !infection,
+               names_to = "Symptom",
+               values_to = "percentage")
+ii_symptom_long$percentage <- as.numeric(ii_symptom_long$percentage)
+
+
+ggplotly(
+  ggplot(ii_symptom_long, aes(
+    x = infection, y = percentage, fill = Symptom
+  )) +
+    geom_col(position = "dodge") +
+    scale_y_continuous(
+      labels = function(x)
+        paste0(x * 100, "%")
+    ) +
+    labs(title = "Distribution of Symptoms For Three Initial Infection Types",
+         x = "Initial Infection Type", y = "Percentage")
+)
+```
+
+- We can see that discharge is seen the most, regardless of infection type. Those with just gonorrhea did not experience any symptoms related to their lymph nodes. Those with both chlamydia and gonorrhea did not experience any rash.  
+
 # Checking Proportionality 
 
 - In order to build Cox model, we need to check that the data meets our proportional hazards assumptions. We will check this with *Kaplan-Meier Curves* and *Hazard Ratios*.
@@ -178,7 +248,7 @@ KMplot <-
 ggplotly(KMplot[[1]])
 survdiff(surv_object ~ iinfct, data = std)
 ```
-- Since we see no intersection in our Kaplan-Meier Curves for each type of initial infection, we can concur proportional hazards hold. 
+- Since we see no intersection in our Kaplan-Meier Curves over time for each type of initial infection, we can concur proportional hazards hold. 
 
 ## Hazard Ratios 
 ```{r, echo = F}
