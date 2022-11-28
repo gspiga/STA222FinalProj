@@ -29,17 +29,17 @@ std0 = std
 any(is.na(std))
 
 # add number of symptoms column
-symptoms <- c("itch","lesion","rash","lymph", "abdpain","discharge","dysuria")
-num_symptoms = rowSums(std[,symptoms])
-num_symptoms <-
-  mapvalues(
-    num_symptoms,
-    from = c(0,1,2,3,4,5),
-    to = c("0","1","2",">2",">2",">2")
-  )
-std["num_symptoms"] = num_symptoms
-std$num_symptoms = as.factor(std$num_symptoms)
-std$num_symptoms = relevel(std$num_symptoms, ref="0")
+# symptoms <- c("itch","lesion","rash","lymph", "abdpain","discharge","dysuria")
+# num_symptoms = rowSums(std[,symptoms])
+# num_symptoms <-
+#   mapvalues(
+#     num_symptoms,
+#     from = c(0,1,2,3,4,5),
+#     to = c("0","1","2",">2",">2",">2")
+#   )
+# std["num_symptoms"] = num_symptoms
+# std$num_symptoms = as.factor(std$num_symptoms)
+# std$num_symptoms = relevel(std$num_symptoms, ref="0")
 
 
 factor.cols <-
@@ -186,17 +186,16 @@ boxplot(time ~ rash, data=std0)
 boxplot(time ~ num_symptoms, data=std0)
 ```
 
-```{r}
-# survfit(surv_object ~ num_symptoms, data=std)
-
-summary(coxph(surv_object ~ num_symptoms, data=std))
-```
 
 ```{r}
-KM_num_symp <- survfit(surv_object ~ num_symptoms, data = std)
-KM_num_symp <- ggsurvplot(KM_num_symp) + labs(title = "Kaplan-Meier Curves for Number of Symptoms") 
-# ggplotly(KM_num_symp[[1]])
-KM_num_symp
+KM_abdpain <- survfit(surv_object ~ abdpain, data = std)
+KM_abdpain <- ggsurvplot(KM_abdpain) + labs(title = "Kaplan-Meier Curves for Abdominal Pain") 
+KM_abdpain
 ```
-
+```{r}
+KM_os <- survfit(surv_object ~ os30d, data = std)
+KM_os <- ggsurvplot(KM_os) + labs(title = "Kaplan-Meier Curves for Oral Sex Within Last 30 Days") 
+# ggplotly(KM_os[[1]])
+KM_os
+```
 
