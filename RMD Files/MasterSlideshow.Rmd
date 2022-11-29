@@ -1,5 +1,5 @@
 ---
-title: "Analysis on Reinfection of Sexually Transmitted Diseases"
+title: "Analysis on Reinfection of Gonorrhea and Chlamydia"
 author: "Yichu Chen, Gu Gong, Kate Jones, Gianni Spiga"
 date: '2022-11-29'
 output:
@@ -121,12 +121,6 @@ std$condom <-
     from = c("1", "2", "3"),
     to = c("always", "sometime", "never")
   )
-std$condom <-
-  mapvalues(
-    std$condom,
-    from = c("always", "sometime", "never"),
-    to = c("use", "use", "never")
-  )
 
 
 std
@@ -150,8 +144,7 @@ surv_object <- Surv(time = std$time, event = std$rinfct)
 ```
 
 - Below we create two pie charts. The first shows the percentages for each type of initial infection. The second shows the percentages for the number of partners each patient had. 
-- Roughly 45% of the patients were initially infected by chlamydia, 16% of the patients were initially infected by gonorrhea; 39% of the patients were infected by both types of bacteria to start with. It looks like that infection by chlamydia was more commonly seen than infection by gonorrhea.
-- About 70% of the patients reported to have 1 sex partner; 16.6% of them had 2 partners; 8% had no sex partner; it is very rare to have 3 or more sex partners; still, it is worth notice that one of the patients reported to have 19 sex partners.
+
 
 ```{r, echo = F}
 fig1 <-
@@ -176,7 +169,11 @@ fig1 <-
     )
   )
 fig1
+```
 
+- Roughly 45% of the patients were initially infected by chlamydia, 16% of the patients were initially infected by gonorrhea; 39% of the patients were infected by both types of bacteria to start with. It looks like that infection by chlamydia was more commonly seen than infection by gonorrhea.
+
+```{r, echo = F}
 fig2 <-
   plot_ly(
     data = data.frame(table(std$npartner)),
@@ -200,6 +197,11 @@ fig2 <-
   )
 fig2
 ```
+
+- About 70% of the patients reported to have 1 sex partner; 16.6% of them had 2 partners; 8% had no sex partner; it is very rare to have 3 or more sex partners; still, it is worth notice that one of the patients reported to have 19 sex partners.
+
+- Another interesting observation is that about 8% of patients in the study had zero partners but still contracted an STD. We note that diseases like gonorrhea and chlamydia can be transmitted via ocular exposure or needle sharing. 
+
 - We are also interested in the frequency of symptoms for each type of initial infection among those patients who were reinfected. Overall, discharge is the most common symptom for all three types of initial infection.
 ```{r, echo = F, message = F}
 # From some_eda1 file
@@ -261,12 +263,16 @@ ggplotly(
 )
 ```
 
+- Years of schooling tends to be positively correlated with age. Patients with 6 to 8 years of education are typically under 18. For patients with over 9 years of education, the corresponding age distribution starts to have much higher variability
+
 ```{r, warning = F, echo = F}
 ggplotly(ggplot(data=std)+
   geom_boxplot(aes(x=as.factor(npartner), y=age, fill=as.factor(npartner)))+
   labs(title="Number of Partners vs. Age", x="Number of Partners", y="Age", fill = "Number of Partners") + scale_fill_brewer(palette="BuPu")
 )
 ```
+
+- The number of partners does not seem to have a strong association with age.
 
 # Checking Proportionality 
 
@@ -275,7 +281,7 @@ ggplotly(ggplot(data=std)+
 ## Kaplan-Meier Curves 
 
 - Before applying the Cox regression, we first test to ensure that the proportionality assumption was not violated for the base model that compares the three different types of infection. The Kaplan-Meier curves are plotted below, and it can be seen that at no point do the curves intersect. 
-- The survdiff() function results indicate that there is a difference in survival time for the three categories of initial infection.
+- We can easily notice that those who were initially infected with Gonorrhea have the lowest probability of survival (e.g. the highest risk of reinfection) for any point in time. Consequently, we see that those with Chlamydia have the lowest risk of reinfection. This can also be noticed by our cumulative hazard curves below. 
 
 ```{r, echo = F, warning = F}
 KMobj <- survfit(surv_object ~ iinfct, data = std)
@@ -286,6 +292,8 @@ KMplot <-
 ggplotly(KMplot[[1]])
 survdiff(surv_object ~ iinfct, data = std)
 ```
+
+- The survdiff() function results indicate that there is a difference in survival time for the three categories of initial infection.
 
 ## Hazard Ratios 
 
@@ -315,8 +323,7 @@ ggplotly(
 ```
 ## Cumulative Hazards and CLogLog
 
-- Further, the complementary log-log curves run parallel to each other after crossing once around time = 75 days.  
-
+- Not surprisingly, we can see that the cumulative hazard grows much faster over time when Gonorrhea is the initial infection instead of Chlamydia and being initially infected with both. 
 ```{r, echo = F, warning = F}
 # {plot(survfit(surv_object ~ iinfct, data = std),col=4:6,lwd=1,fun="cumhaz")
 # title("Cumulative Hazard for intital infection")
@@ -335,7 +342,11 @@ cumHazPlot <-
 
 ggplotly(cumHazPlot$plot)
 
+```
 
+- Further, the complementary log-log curves run parallel to each other after crossing once around time = 75 days.
+
+```{r, echo = F}
 # Complimentary Log-Log 
 cLogLogPlot <-
   ggsurvplot(
@@ -347,6 +358,7 @@ cLogLogPlot <-
 
 ggplotly(cLogLogPlot[[1]])
 ```
+
 - Once the initial Cox model was applied, the Schoenfeld residuals were plotted and there is no evidence of a non-random pattern that would suggest a violation of the assumptions.
 
 ```{r, echo = F}
@@ -358,6 +370,7 @@ hodg.zph <- cox.zph(cox)
 #For initial infection
 ggcoxzph(hodg.zph[1], se = FALSE, font.main = 12, ggtheme = theme_minimal(), point.col = "#6495ed")
 ```
+
 - The cox.zph function was then applied to the model which resulted in a p-value of 0.24 reinforcing that the proportional hazards assumption is maintained. Therefore, we chose to apply the Cox model which is elaborated on the next slide.
 
 # Model Selection
@@ -390,6 +403,15 @@ drop1(cox1, test = "Chisq")
 - From here, the goal is to remove extraneous variables and include models that are statistically significant and lower the AIC of the model. 
 
 - After creating a model with just these variables, condom use became less significant. However, no condom use is much more significant with a p-value of 0.14 versus a p-value of 0.80 for condom use sometimes. We create a model that drops the condom variable, but the AIC increases, suggesting that we should keep it. To see if recategorizing the values would lead to an increase in significance and decrease in AIC, we split condom use into two categories: never and use, where use includes individuals who sometimes use condoms and those who always use condoms. The new p-value for never using condoms was 0.009 and AIC decreased, so we kept the transformed variable in the model.
+
+```{r, echo = F}
+std$condom <-
+  mapvalues(
+    std$condom,
+    from = c("always", "sometime", "never"),
+    to = c("use", "use", "never")
+  )
+```
 
 ```{r}
 cox.model = coxph(surv_object ~ iinfct+condom+vagina
@@ -604,6 +626,7 @@ cumHazPlot <-
 #ggplotly(cumHazPlot$plot + geom_abline())
 cumHazPlot$plot + geom_abline()
 ```
+
 Since our standard 45 degree line fits the curve well, we can conclude that our final model is indeed a good fit. 
 
 # Interpretting our Model
@@ -627,7 +650,7 @@ summary(cox.model)
 
 - Although there were no obvious outliers for the condom use variable or initial infection type, the other variables had outliers that are summarized below:
 
-  + Martingale Residuals: 11, 221, 690
+  + Martingale Residuals: 11, 221, 366
   + Deviance Residuals: no unusual points
   + Initial infection: chlamydia Influence: 366, 211
   + Initial infection: both Influence: 366
@@ -647,7 +670,7 @@ ggplotly(
 )
 ```
 
-- Let's observe the most frequent outliers, observations 366, 525, and 831. 
+- Let's observe the most frequent outliers, observations 11, 366, 525, and 831. 
 ```{r, echo = F}
 unusualpts <- c(11, 366,525,831)
 std[unusualpts,]
@@ -664,18 +687,19 @@ std[unusualpts,]
 
 - Although we already went over the mathematical interpretation of our model, we want to also touch on some intuitive reasoning behind our coefficients. First, we saw earlier that each additional year of schooling leads to a further reduction in risk of reinfection. As individuals progress through the public schooling system, they are progressively taught more about sexual education and diseases. Increased awareness would intuitively lead to a decrease in risk of contraction because people become more aware of the dangers of STDs and how to prevent contracting them. 
 
+- In terms of the initial type of infection, we noticed that an initial infection of gonorrhea is associated with a higher risk of reinfection. Looking further into the differences of chlamydia and gonorrhea, we found that chlamydia is more common than gonorrhea, which is supported by our data. Further, we found that some strains of gonorrhea have become antibiotic resistant, making the infection harder to treat and increasing its propensity to spread. A similar phenomenon has not been recorded for chlamydia.
+
 - The model showed that vaginal involvement considerably increased the risk of reinfection. Vaginal involvement leads to an increased susceptibility to infection since there is tissue damage. Hence, when patients experience vaginal involvement they should be made aware that they are at a higher risk of contracting an STD and hence should be especially careful, being sure to discuss STD and testing with their partners. 
 
 ```{r, echo = F}
 ggforest(cox.model, data = std)
 ```
 
-- Counterintuitively, our model suggests that never using condoms actually decreases risk of reinfection. There are a few hypotheses that could be tested with further studies to explain this relationship. First, it may be that those individuals who are not using condoms are only in exclusive relationships and hence have one consistent partner. Alternatively, it may be the case that those people not using condoms are more selective with their partners. 
+- Interestingly, our model suggests that never using condoms actually decreases risk of reinfection. There are a few hypotheses that could be tested with further studies to explain this relationship. First, it may be that those individuals who are not using condoms are only in exclusive relationships and hence have one consistent partner. Alternatively, it may be the case that those people not using condoms are more selective with their partners and are actively being tested and/or having open discussions about STDs. 
 
 - The last variable to discuss is discharge. This variable may require further exploration because we are not given any additional information in terms of the type of discharge. Vaginal discharge is actually a fairly common occurrence and does not necessarily imply that there is an issue. It would be helpful to have more information about the type of discharge and if the patient regularly has vaginal discharge.
 
-- The goal of this study was to analyze risk factors for reinfection of gonorrhea and chlamydia in order to inform the population and decrease the spread of STDs. From this model, we found that years of education is the most influential factor in determining risk of reinfection. Therefore, we suggest that sexual education be consistently addressed earlier in school in order to raise awareness and communicate the importance of safe sex practices and STD testing. 
-
-- Lastly, we noticed in the exploratory data analysis that our population is lacking racial diversity. In further studies, it would be interesting to gather data from a more diverse population, and also gather information about income level to see if there is any correlation between income and risk of infection.
+- The goal of this study was to analyze risk factors for reinfection of gonorrhea and chlamydia in order to inform the population and decrease the spread of STDs. From this model, we found that years of education is the most influential factor in determining risk of reinfection. Therefore, we suggest that sexual education be consistently addressed earlier in school in order to raise awareness and communicate the importance of safe sex practices and STD testing.  
+- Lastly, we noticed in the exploratory data analysis that our population is lacking racial diversity. In further studies, it would be interesting to gather data from a more diverse population, and also gather information about income level to see if there is any correlation between income and risk of infection. Additionally, it’s our understanding that each of the individuals in this study is female. It would be interesting to conduct a similar study using a population of males to see if there’s a difference in survival curves between genders.
 
 # Thank you! 
