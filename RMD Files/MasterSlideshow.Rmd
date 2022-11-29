@@ -23,9 +23,8 @@ output:
   + number of partners
   + participating in oral sex in the last year and month
   + participating in rectal sex in the last year and month
-  + presence of certain symptoms at time of initial infection
+  + presence of certain symptoms at both time of initial infection and examination
   + condom use
-  + vaginal involvement at examination
   
 - If we can understand the factors that lead to an increased risk of reinfection, we can utilize targeted preventive care and hopefully reduce the number of individuals who become infected.
 
@@ -202,7 +201,7 @@ fig2
 
 - Another interesting observation is that about 8% of patients in the study had zero partners but still contracted an STD. We note that diseases like gonorrhea and chlamydia can be transmitted via ocular exposure or needle sharing. 
 
-- We are also interested in the frequency of symptoms for each type of initial infection among those patients who were reinfected. Overall, discharge is the most common symptom for all three types of initial infection.
+- We are also interested in the frequency of symptoms for each type of initial infection among the patients in the study. Overall, discharge is the most common symptom for all three types of initial infection.
 ```{r, echo = F, message = F}
 # From some_eda1 file
 std0$iinfct <-
@@ -644,7 +643,7 @@ summary(cox.model)
 #####################################################
 ```
 
-- Therefore, patients with an initial infection of chlamydia are 32% less likely to become reinfected with an STD compared to those initially infected with gonorrhea. Similarly, patients who initially were infected with both STDs are 22% less likely to become reinfected. Counterintuitively, those in the study who stated they never used condoms were at lower risk of reinfection by about 25%. This observation will be further discussed in the next section. Vaginal involvement increases the probability of reinfection by about 50%. Also surprisingly, discharge at time of the exam decreases risk of reinfection by 30%. Lastly, for each year increase in education, the risk of reinfection decreases by 14%.
+- Therefore, patients with an initial infection of chlamydia are 32% less likely on average to become reinfected with an STD compared to those initially infected with gonorrhea. Similarly, patients who initially were infected with both STDs are 22% less likely on average to become reinfected. Counterintuitively, those in the study who stated they never used condoms were at lower risk of reinfection by about 25%. This observation will be further discussed in the next section. Vaginal involvement increases the probability of reinfection by about 50% on average. Also surprisingly, discharge at time of the exam decreases risk of reinfection by 30%. Lastly, for each year increase in education, the risk of reinfection decreases by 14%.
 
 # Outliers 
 
@@ -677,11 +676,10 @@ std[unusualpts,]
 ```
 
 - Each of these three individuals had a longer than expected survival time and was a censored observation.
-  + Observation 11 was infected with both chlamydia and gonorrhea, which should lead to an increased risk of reinfection. However, this observation never became reinfected afer 1468 days in the study. 
-  + Observation number 366 was initially infected with gonorrhea, which based on our model has the highest     risk for reinfection, used condoms, and had a relatively low level of education (yschool=9), but still     had a relatively long time to reinfection. 
-  + Observation number 525 was initially infected with both chlamydia and gonorrhea, which should lead to    an increased risk of reinfection. They also reported vaginal involvement during their exam and had a       relatively low level of education (yschool=8), but was never reinfected and censored at 1005 days. 
-  + Observation number 831 had vaginal involvement and no discharge at exam, but was not reinfected and 
-  also censored.
+  + Observation 11 was infected with both chlamydia and gonorrhea, which should lead to an increased risk of reinfection. However, this observation never became reinfected after 1468 days in the study. 
+  + Observation number 366 was initially infected with gonorrhea, which based on our model has the highest risk for reinfection, used condoms, and had a relatively low level of education (yschool=9), but still never recorded reinfection. 
+  + Observation number 525 was initially infected with both chlamydia and gonorrhea, which should lead to an increased risk of reinfection. They also reported vaginal involvement during their exam and had a  relatively low level of education (yschool=8), but was never reinfected and censored at 1005 days. 
+  + Observation number 831 had vaginal involvement and no discharge at exam, but was not reinfected and also censored.
   
 # Discussion 
 
@@ -701,5 +699,16 @@ ggforest(cox.model, data = std)
 
 - The goal of this study was to analyze risk factors for reinfection of gonorrhea and chlamydia in order to inform the population and decrease the spread of STDs. From this model, we found that years of education is the most influential factor in determining risk of reinfection. Therefore, we suggest that sexual education be consistently addressed earlier in school in order to raise awareness and communicate the importance of safe sex practices and STD testing.  
 - Lastly, we noticed in the exploratory data analysis that our population is lacking racial diversity. In further studies, it would be interesting to gather data from a more diverse population, and also gather information about income level to see if there is any correlation between income and risk of infection. Additionally, it’s our understanding that each of the individuals in this study is female. It would be interesting to conduct a similar study using a population of males to see if there’s a difference in survival curves between genders.
+
+
+# References 
+
+- Klein, J.P. and Moeschberger, M.L. (2003). Survival Analysis: Techniques for Censored and Truncated Data (2nd Edition). 2003. Springer. 542 p.
+
+- Mitchell H. (2004, May 29). Vaginal discharge--causes, diagnosis, and treatment. BMJ.;328(7451):1306-8. doi: 10.1136/bmj.328.7451.1306. PMID: 15166070; PMCID: PMC420177.
+
+- What Is Gonorrhea & How Do You Get It? (n.d.). Planned Parenthood. https://www.plannedparenthood.org/learn/stds-hiv-safer-sex/gonorrhea.
+
+- Yocum, A., MD. (2022, October 22). What’s the Difference Between Chlamydia and Gonorrhea? K Health. https://khealth.com/learn/std/chlamydia-vs-gonorrhea/.
 
 # Thank you! 
