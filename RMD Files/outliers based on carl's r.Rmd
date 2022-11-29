@@ -246,12 +246,12 @@ AIC(cox4)
 
 ## CODE BELOW: categorical version of yschool and cox5
 ```{r}
-cat_yschool = cut(std$yschool, c(-Inf, 7, 12, Inf), labels = c("6-7","8-12","above 12"))
+cat_yschool = cut(std$yschool, c(-Inf, 8, 12, Inf), labels = c("6-8","9-12","above 12"))
 std['cat_yschool'] = cat_yschool
 
 # re-level to use "8-12" as the reference group since it's survival curve is in between the other two groups
 
-std$cat_yschool = relevel(std$cat_yschool, ref="8-12")
+std$cat_yschool = relevel(std$cat_yschool, ref="9-12")
 ```
 
 ```{r}
@@ -284,19 +284,21 @@ In cox6 the "discharge at exam" is dropped.
 
 
 ```{r}
+KM_condom <- survfit(surv_object ~ condom, data = std)
+KM_condom_plot <- ggsurvplot(KM_condom) + labs(title = "Kaplan-Meier Curves for Condom Use") 
+KM_condom_plot
+```
 
+```{r}
 ############### THE FINAL MODEL #####################
-cox.model = coxph(surv_object ~ iinfct+condom+vagina+cat_yschool+os30d+abdpain, data = std)
+cox.model = coxph(surv_object ~ iinfct+condom+vagina+dchexam+yschool, data = std)
+drop1(cox.model, test="Chisq")
 summary(cox.model)
 #####################################################
 ```
 
-```{r}
-drop1(cox.model)
-```
-```{r}
-AIC(cox.model)
-```
+
+
 
 
 
@@ -312,59 +314,6 @@ plot(cox.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Haza
 abline(0,1, col=2, lwd=2, lty=2)
 title("Cumulative Hazard of Cox-Snell Residuals")
 ```
-
-# Should we apply stratification?
-
-```{r}
-# cox7 <- coxph(surv_object ~ strata(iinfct) + strata(condom) + vagina + cat_yschool, data = std)
-# cox7.cs <- std$rinfct-residuals(cox7, type="martingale")
-# 
-# # Cum. Hazard for cox-snell residual
-# cox7.cs.surv <- Surv(cox7.cs, std$rinfct)
-# cox7.cs.fit <- survfit(cox7.cs.surv~1,type="fleming-harrington")
-# 
-# plot(cox7.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
-# abline(0,1, col=2, lwd=2, lty=2)
-# title("Cum. Hazard of Cox-Snell Residuals, strata condom&iinfct")
-# 
-# plot(cox6.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
-# abline(0,1, col=2, lwd=2, lty=2)
-# title("Cum. Hazard of Cox-Snell Residuals")
-# 
-
-```
-
-```{r}
-# cox6b <- coxph(surv_object ~ iinfct + condom + vagina + yschool, data = std)
-# cox6b.cs <- std$rinfct-residuals(cox6b, type="martingale")
-# 
-# # Cum. Hazard for cox-snell residual
-# cox6b.cs.surv <- Surv(cox6b.cs, std$rinfct)
-# cox6b.cs.fit <- survfit(cox6b.cs.surv~1,type="fleming-harrington")
-# 
-# plot(cox6b.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
-# abline(0,1, col=2, lwd=2, lty=2)
-# title("Continuous yschool")
-# 
-# plot(cox6.cs.fit, fun="cumhaz", xlab="Cox-Snell Residuals", ylab="Cumulative Hazard")
-# abline(0,1, col=2, lwd=2, lty=2)
-# title("Categorical yschool")
-
-```
-
-
-```{r}
-# cox8 <- coxph(surv_object ~ iinfct + condom + vagina+cat_yschool+num_symptoms, data = std)
-# summary(cox8)
-```
-
-```{r}
-# cox.full <- coxph(surv_object~iinfct+marital+race+os12m+os30d+rs12m+rs30d+abdpain+ discharge+dysuria+condom+itch+lesion+rash+lymph+vagina+dchexam+abnode+age+cat_yschool+npartner+num_symptoms, data = std)
-# step.model <- stepAIC(cox.full, direction = "both", 
-#                       trace = FALSE)
-# step.model
-```
-
 
 
 ## NEED TO CHANGE EVERYTHING FROM HERE DOWN.
@@ -391,26 +340,27 @@ plot(test.ph[3], main = "Schoenfeld Residuals for whether vagina involvement or 
 ```
 
 ```{r}
-plot(test.ph[4], main = "Schoenfeld Residuals for which level of education level the tester in")
+plot(test.ph[4], main = "Schoenfeld Residuals for wether discharge present or not at exam")
 ```
 
 ```{r}
-plot(test.ph[5], main = "Schoenfeld Residuals for whether having oral sex last 30 days or not")
+plot(test.ph[5], main = "Schoenfeld Residuals for schooling years")
 ```
 
 ```{r}
-plot(test.ph[6], main = "Schoenfeld Residuals for whether having Presence of abdominal pain or not")
+# plot(test.ph[6], main = "Schoenfeld Residuals for whether having Presence of abdominal pain or not")
 ```
 
 
 ```{r}
-correlations <- apply(X = test.ph$y, MARGIN = 2, FUN = function(x) {cor.test(x, test.ph$x, method = "spearman")})
-correlations
+# correlations <- apply(X = test.ph$y, MARGIN = 2, FUN = function(x) {cor.test(x, test.ph$x, method = "spearman")})
+# correlations
 ```
 
 And based on the correlation test, all variables induce no non-proportionality. That means we should include both variables in our model.
 
-```{r}
+```{r} 
+
 residuals <- residuals(cox.model,type="martingale")
 
 add.cs <- as.numeric(std$rinfct)-residuals
@@ -419,7 +369,7 @@ add.cs <- as.numeric(std$rinfct)-residuals
 surv.csr <- survfit(Surv(add.cs,as.numeric(std$rinfct))~1,type="fleming-harrington")
 
 {plot(surv.csr,fun="cumhaz",xlab="Cox-snell residuals",ylab="Cumulative Hazard")
-abline(0,1)
+abline(0,1, col=2, lty=2, lwd=2)
 title("Cumulative Hazard of Cox-Snell Residuals")}
 ```
 
@@ -437,88 +387,95 @@ title("Martingale Residuals vs. Linear Predictor")}
 
 ```{r}
 {plot(b.preds,b.dev,xlab="Linear Predictor",ylab="Deviance Residual", 
-     ylim = c(-3,3), pch = 19, cex = 0.5)
+     ylim = c(-4,4), pch = 19, cex = 0.5)
 title("Deviance Residuals vs. Linear Predictor")
 text(b.preds,b.dev)}
 ```
 
 ```{r}
-{plot(b.dfb[,1],xlab="Observation Number",ylab="dfbeta for initial infection", 
-     ylim=c(-.2,.2), pch = 19, cex = 0.5)
+{plot(b.dfb[,1],xlab="Observation Number",ylab="dfbeta for initial infection: chlamydia", 
+     ylim=c(-.05,.05), pch = 19, cex = 0.5)
 text(b.dfb[,1])
-title("dfbeta Values by Observation Number for initial infection")}
+title("dfbeta Values by Observation Number for initial infection: chlamydia")}
 ```
 ```{r}
-{plot(b.dfb[,2],xlab="Observation Number",ylab="dfbeta for condom", 
-     ylim=c(-.2,.2), pch = 19, cex = 0.5)
+{plot(b.dfb[,2],xlab="Observation Number",ylab="dfbeta for initial infection: both", 
+     ylim=c(-.04,.04), pch = 19, cex = 0.5)
 text(b.dfb[,2])
-title("dfbeta Values by Observation Number for condoms using or not")}
+title("dfbeta Values by Observation Number for initial infection: both")}
 ```
 
 ```{r}
-{plot(b.dfb[,3],xlab="Observation Number",ylab="dfbeta for vagina involvement", 
-     ylim=c(-.2,.2), pch = 19, cex = 0.5)
+{plot(b.dfb[,3],xlab="Observation Number",ylab="dfbeta for condom use", 
+     ylim=c(-.02,.02), pch = 19, cex = 0.5)
 text(b.dfb[,3])
-title("dfbeta Values by Observation Number for vagina involvement or not")}
+title("dfbeta Values by Observation Number for condom use")}
 ```
 
 ```{r}
-{plot(b.dfb[,4],xlab="Observation Order",ylab="dfbeta for categorized year at school", pch = 19, cex = 0.5)
+{plot(b.dfb[,4],xlab="Observation Order",ylab="dfbeta for involvement of vagina at exam", pch = 19, cex = 0.5, ylim = c(-0.06,0.06))
 text(b.dfb[,4])
-title("dfbeta Values by Observation Order for categorized year at school")}
+title("dfbeta Values by Observation Order for involvement of vagina at exam")}
 ```
 
 ```{r}
-{plot(b.dfb[,5],xlab="Observation Order",ylab="dfbeta for oral sex last 30 days or not", pch = 19, cex = 0.5)
+{plot(b.dfb[,5],xlab="Observation Order",ylab="dfbeta for discharge at exam", pch = 19, cex = 0.5, ylim=c(-0.08,0.08))
 text(b.dfb[,5])
-title("dfbeta Values by Observation Order for oral sex last 30 days or not")}
+title("dfbeta Values by Observation Order for discharge at exam")}
 ```
 
 
 ```{r}
-{plot(b.dfb[,6],xlab="Observation Order",ylab="dfbeta for Presence of abdominal pain", pch = 19, cex = 0.5)
+{plot(b.dfb[,6],xlab="Observation Order",ylab="dfbeta for years of school", pch = 19, cex = 0.5)
 text(b.dfb[,6])
-title("dfbeta Values by Observation Order for Presence of abdominal pain")}
+title("dfbeta Values by Observation Order for years of school")}
 ```
 
 Based on the plot above, we can get that the outliers and influencial points in this data as below:
 
-Martingale Residuals 366, 66, 222
+Martingale Residuals - 690
 
-Deviance Residuals - 366, 820
+Deviance Residuals - No unusual point
 
-initial infection Influence - 66,366
+initial infection: chlamydia Influence - 366, 211
 
-Condom using or not Influence - 366,66
+initial infection: both Influence - 366
 
-vagina involvement or not Influence - 93, 699, 41
+condom use or not Influence - 525
 
-categorized year at school Influence - 93, 699, 41
+vagina involvement or not Influence - 831, 525, 11
 
-oral sex last 30 days or not Influence - 849,41,473
+discharge at exam Influence - 831, 859, 154
 
-Presence of abdominal pain Influence - 473,81,169,660
+year at school Influence - 294, 525, 635, 743
 
-The most important observations to examine seem to be  66,366,93,699,41,473
+The most important observations to examine seem to be  366, 525, 831, 743
 
 ```{r}
-unusualpts <- c( 66,366,93,699,41,473)
+unusualpts <- c(366, 525, 831)
 std[unusualpts,]
 ```
 
-Based on the result, we can see that all of them are not having oral sex last 30 days and have a relatively high education level based on their year at school, which are indicators for not having reinfection of std.
+ * Patient 366: Had the worst type of initial infection (gonorrhea), used condom, and had relatively low schooling year (yschool=9), but was not reinfected after a long survival time (1439 days).    
+ 
+ * Patient 525: Had the second worst type of initial infection (gonorrhea and chlamydia), with vagina involvement during exam and had low schooling year (yschool=8), but was not reinfected after a long survival time (1005 days).    
+ 
+ * Patient 831: Had vagina involvement and no discharge at exam, but was not reinfected after a long survival time.   
+ 
 
-Person 66: gonorrhea, having Presence of abdominal pain, sometimes using condom
+<!-- Based on the result, we can see that all of them are not having oral sex last 30 days and have a relatively high education level based on their year at school, which are indicators for not having reinfection of std. -->
 
-Person 366: gonorrhea, sometimes using condom
+<!-- Person 66: gonorrhea, having Presence of abdominal pain, sometimes using condom -->
 
-Person 93: both, having Presence of abdominal pain, always using condom
+<!-- Person 366: gonorrhea, sometimes using condom -->
 
-Person 699: both, always using condom
+<!-- Person 93: both, having Presence of abdominal pain, always using condom -->
 
-Person 41: 	chlamydia, always using condom, getting vagina involvement
+<!-- Person 699: both, always using condom -->
 
-Person 473: chlamydia, sometimes using condom, getting vagina involvement
+<!-- Person 41: 	chlamydia, always using condom, getting vagina involvement -->
+
+<!-- Person 473: chlamydia, sometimes using condom, getting vagina involvement -->
 
 
 
