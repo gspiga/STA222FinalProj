@@ -360,10 +360,12 @@ ggcoxzph(hodg.zph[1], se = FALSE, font.main = 12, ggtheme = theme_minimal(), poi
 ```
 - The cox.zph function was then applied to the model which resulted in a p-value of 0.24 reinforcing that the proportional hazards assumption is maintained. Therefore, we chose to apply the Cox model which is elaborated on the next slide.
 
-# Finding the Best Model
+# Model Selection
 
-## The Full model 
-- To better understand the influences on reinfection, we build a cox Proportional Hazard Model with all of the variables in the data 
+## The Full model
+
+- We start with a full model that includes all covariates and then simplify the model after testing each covariate for significance. 
+
 ```{r, echo = T}
 cox1 <-
   coxph(
@@ -381,22 +383,29 @@ summary(cox1)
 drop1(cox1, test = "Chisq")
 ```
 
+- The summary of the cox model as well as the drop1() function indicated that initial infection type, condom use, vaginal involvement, discharge at exam, and years of school were significant.
 
 ## Simplifying the Model
 
 - From here, the goal is to remove extraneous variables and include models that are statistically significant and lower the AIC of the model. 
-- We considered stratification, however, we found no signficant difference between a stratified and non-stratifed model via the Cox Snell Residuals, which measure the overall fit of a Cox model. This coincides with our conclusion earlier that the proportional hazards assumption was not violated. 
 
-```{r, echo = F}
-############### THE FINAL MODEL #####################
-# cox.model = coxph(surv_object ~ iinfct+condom+vagina+cat_yschool+os30d+abdpain, data = std)
-# summary(cox.model)
-#####################################################
+- After creating a model with just these variables, condom use became less significant. However, no condom use is much more significant with a p-value of 0.14 versus a p-value of 0.80 for condom use sometimes. We create a model that drops the condom variable, but the AIC increases, suggesting that we should keep it. To see if recategorizing the values would lead to an increase in significance and decrease in AIC, we split condom use into two categories: never and use, where use includes individuals who sometimes use condoms and those who always use condoms. The new p-value for never using condoms was 0.009 and AIC decreased, so we kept the transformed variable in the model.
+
+```{r}
+cox.model = coxph(surv_object ~ iinfct+condom+vagina
+                  +dchexam+yschool, data = std)
+summary(cox.model)
 ```
+- With our reduced model, we still have an overall highly significant model supported by the Liklihood Ratio Test, Wald test, and the Score test. 
 
-- We find that the best model is ----- , how did we get here? 
+- In the next slide, we will use residuals to address our considerations of stratification and transformation of quantitative variables. 
 
 # Residuals
+
+
+
+
+- We considered stratification, however, we found no signficant difference between a stratified and non-stratified model via the Cox Snell Residuals, which measure the overall fit of a Cox model. This coincides with our conclusion earlier that the proportional hazards assumption was not violated.
 
 ## Martingale 
 
@@ -430,8 +439,8 @@ std$cat_yschool = relevel(std$cat_yschool, ref="9-12")
 # For the rest of the analysis.. 
 
 ############### THE FINAL MODEL #####################
-cox.model = coxph(surv_object ~ iinfct+condom+vagina+dchexam+yschool, data = std)
-summary(cox.model)
+# cox.model = coxph(surv_object ~ iinfct+condom+vagina+dchexam+yschool, data = std)
+# summary(cox.model)
 #####################################################
 
 # Create residuals 
@@ -455,23 +464,31 @@ ggplotly(
 
 ## Schoenfield
 
-```{r}
+```{r, message = F, echo = F, warning = F}
+#library(patchwork)
+library(gridExtra)
 test.ph <- cox.zph(cox.model)
 test.ph
 
-#plot(test.ph[1], main = "Schoenfeld Residuals for differernt initial infection types")
+# #plot(test.ph[1], main = "Schoenfeld Residuals for differernt initial infection types")
+# 
+# #Condom use
+# p1 <- ggcoxzph(test.ph[2], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
+# 
+# #Vaginal use
+# p2 <- ggcoxzph(test.ph[3], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
+# 
+# #Discharge at exam use
+# p3 <- ggcoxzph(test.ph[4], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
+# 
+# # Years of schooling
+# p4 <- ggcoxzph(test.ph[5], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
+# p1
+# p2
+# p3
+# p4
 
-#Condom use
-ggcoxzph(test.ph[2], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
-
-#Vaginal use
-ggcoxzph(test.ph[3], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
-
-#Discharge at exam use
-ggcoxzph(test.ph[4], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
-
-# Years of schooling
-ggcoxzph(test.ph[5], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
+ggplotly(ggcoxdiagnostics(cox.model, type = "schoenfeld"))
 ```
 
 
@@ -677,6 +694,25 @@ fig <- fig %>%layout(annotations = annotations)
 fig
 ```
 
+## Cox-Snell
+```{r, echo = F}
+std.cs <- std$rinfct - b.mart
+
+#Cumulative hazard 
+surv.csr <- survfit(Surv(std.cs, std$rinfct) ~1, type = "fleming-harrington", data = std)
+
+cumHazPlot <-
+  ggsurvplot(
+    surv.csr,
+    fun = "cumhaz",
+    conf.int = TRUE,
+    palette = c("#581845"),
+    ggtheme = theme_minimal()
+  ) + ggtitle("Cumulative Hazard for Cox-Snell Residuals")
+
+#ggplotly(cumHazPlot$plot + geom_abline())
+cumHazPlot$plot + geom_abline()
+```
 # Outliers 
 
 # In Conclusion 
