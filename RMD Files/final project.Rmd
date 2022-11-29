@@ -379,8 +379,6 @@ title("Cum. Hazard of Cox-Snell Residuals without num symptoms")
 
 
 
-
-
 ## NEED TO CHANGE EVERYTHING FROM HERE DOWN.
 
 ```{r}
