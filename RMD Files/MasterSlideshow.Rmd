@@ -10,11 +10,27 @@ output:
     widescreen: yes
 ---
 
-# Libraries Used
+# The Data 
 
-- Our analysis for this presenation would not have been possible without these libaries: 
+- Sexually transmitted diseases are infections that are spread during vaginal, oral, or anal intercourse. Although sometimes undetected, STDs can cause serious health problems in individuals and lead to reproductive issues. Here, we examine two types of bacterial infections that can be easily treated once diagnosed. In order to understand the factors that influence the chance of reinfection and hopefully decrease the cases in high-risk populations, the following data was analyzed. Time to reinfection is studied for three different groups: those infected with gonorrhea, those infected with chlamydia, and those infected with both. We also analyze various predictors to see if they significantly influence the survival probability. 
 
-```{r, message = FALSE, warning=FALSE}
+- The predictors are as follows: 
+  + race (white/black) 
+  + marital status (divorced/separated, married, or single)
+  + age
+  + years of schooling
+  + type of initial infection
+  + number of partners
+  + participating in oral sex in the last year and month
+  + participating in rectal sex in the last year and month
+  + presence of certain symptoms at time of initial infection
+  + condom use
+  + vaginal involvement at examination
+  
+- If we can understand the factors that lead to an increased risk of reinfection, we can utilize targeted preventive care and hopefully reduce the number of individuals who become infected.
+
+
+```{r, echo = F, message = FALSE, warning=FALSE}
 library(survival)
 library(KMsurv)
 library(ggplot2)
@@ -30,15 +46,15 @@ library(tidyr)
 ```{r}
 data(std)
 std
-
 ```
+- We will clean the data to make this more interpretable. 
 
-```{r, echo=F}
+```{r, echo=F, warning = F, message=FALSE}
 # Loading in data
 #data(std)
 std0 = std
 # Checking for NA Values in data set 
-any(is.na(std))
+#any(is.na(std))
 
 factor.cols <-
   c(
@@ -112,6 +128,8 @@ std$condom <-
     to = c("use", "use", "never")
   )
 
+
+std
 # Building the Survival Object 
 #infect <- std$iinfct
 surv_object <- Surv(time = std$time, event = std$rinfct)
@@ -132,6 +150,8 @@ surv_object <- Surv(time = std$time, event = std$rinfct)
 ```
 
 - Below we create two pie charts. The first shows the percentages for each type of initial infection. The second shows the percentages for the number of partners each patient had. 
+- Roughly 45% of the patients were initially infected by chlamydia, 16% of the patients were initially infected by gonorrhea; 39% of the patients were infected by both types of bacteria to start with. It looks like that infection by chlamydia was more commonly seen than infection by gonorrhea.
+- About 70% of the patients reported to have 1 sex partner; 16.6% of them had 2 partners; 8% had no sex partner; it is very rare to have 3 or more sex partners; still, it is worth notice that one of the patients reported to have 19 sex partners.
 
 ```{r, echo = F}
 fig1 <-
@@ -180,11 +200,9 @@ fig2 <-
   )
 fig2
 ```
-- We also are interested in the frequency of symptoms for each patient, relative to their initial infection. 
-
+- We are also interested in the frequency of symptoms for each type of initial infection among those patients who were reinfected. Overall, discharge is the most common symptom for all three types of initial infection.
 ```{r, echo = F, message = F}
 # From some_eda1 file
-std0 = std0[which(std0$rinfct == "1"), ]
 std0$iinfct <-
   mapvalues(
     std0$iinfct,
@@ -193,21 +211,14 @@ std0$iinfct <-
   )
 # Symptom Percentages based on Initial Infection
 
-symptoms <-
-  c("itch",
-    "lesion",
-    "rash",
-    "lymph",
-    "abdpain",
-    "discharge",
-    "dysuria")
-ii_sub1 <- std0[which(std0$iinfct == "gonorrhea"), symptoms]
-ii_sub2 <- std0[which(std0$iinfct == "chlamydia"), symptoms]
-ii_sub3 <- std0[which(std0$iinfct == "both"), symptoms]
+symptoms <- c("itch","lesion","rash","lymph", "abdpain","discharge","dysuria")
+ii_sub1 <- std0[which(std0$iinfct=="gonorrhea"),symptoms]
+ii_sub2 <- std0[which(std0$iinfct=="chlamydia"),symptoms]
+ii_sub3 <- std0[which(std0$iinfct=="both"),symptoms] 
 
-ii_sub1 <- colSums((ii_sub1)) / nrow(ii_sub1)
-ii_sub2 <- colSums((ii_sub2)) / nrow(ii_sub2)
-ii_sub3 <- colSums((ii_sub3)) / nrow(ii_sub3)
+ii_sub1 <- colSums((ii_sub1))/nrow(ii_sub1)
+ii_sub2 <- colSums((ii_sub2))/nrow(ii_sub2)
+ii_sub3 <- colSums((ii_sub3))/nrow(ii_sub3)
 
 ii_sub1["infection"] = "gonorrhea"
 ii_sub2["infection"] = "chlamydia"
@@ -215,13 +226,8 @@ ii_sub3["infection"] = "both"
 
 ii_symptom <- as.data.frame(rbind(ii_sub1, ii_sub2, ii_sub3))
 
-ii_symptom_long <-
-  pivot_longer(ii_symptom,
-               !infection,
-               names_to = "Symptom",
-               values_to = "percentage")
+ii_symptom_long <- pivot_longer(ii_symptom, !infection, names_to="Symptom",values_to="percentage")
 ii_symptom_long$percentage <- as.numeric(ii_symptom_long$percentage)
-
 
 ggplotly(
   ggplot(ii_symptom_long, aes(
@@ -233,11 +239,34 @@ ggplotly(
         paste0(x * 100, "%")
     ) +
     labs(title = "Distribution of Symptoms For Three Initial Infection Types",
-         x = "Initial Infection Type", y = "Percentage")
+         x = "Initial Infection Type", y = "Percentage") + theme_minimal()
+)
+```
+- We can see that discharge is seen the most, regardless of infection type, while the least common symptom is symptoms involving the lymph nodes. 
+
+```{r, echo = F, warning = F}
+ggplotly(
+  ggplot(data = std) +
+    geom_boxplot(aes(
+      x = as.factor(std$yschool),
+      y = age,
+      fill = as.factor(std$yschool)
+    )) +
+    labs(
+      title = "Years of Education vs. Age",
+      x = "Years of Schooling",
+      y = "Age",
+      fill = "Years"
+    ) + scale_fill_brewer(palette = "BuPu")
 )
 ```
 
-- We can see that discharge is seen the most, regardless of infection type. Those with just gonorrhea did not experience any symptoms related to their lymph nodes. Those with both chlamydia and gonorrhea did not experience any rash.  
+```{r, warning = F, echo = F}
+ggplotly(ggplot(data=std)+
+  geom_boxplot(aes(x=as.factor(npartner), y=age, fill=as.factor(npartner)))+
+  labs(title="Number of Partners vs. Age", x="Number of Partners", y="Age", fill = "Number of Partners") + scale_fill_brewer(palette="BuPu")
+)
+```
 
 # Checking Proportionality 
 
@@ -245,18 +274,23 @@ ggplotly(
 
 ## Kaplan-Meier Curves 
 
+- Before applying the Cox regression, we first test to ensure that the proportionality assumption was not violated for the base model that compares the three different types of infection. The Kaplan-Meier curves are plotted below, and it can be seen that at no point do the curves intersect. 
+- The survdiff() function results indicate that there is a difference in survival time for the three categories of initial infection.
+
 ```{r, echo = F, warning = F}
 KMobj <- survfit(surv_object ~ iinfct, data = std)
 KMplot <-
   ggsurvplot(KMobj,
              palette = c("#daed64", "#6495ed", "#ed7864"),
-             ggtheme = theme_fivethirtyeight()) + labs(title = "Kaplan-Meier Curves for Initial Infection Type")
+             ggtheme = theme_minimal()) + labs(title = "Kaplan-Meier Curves for Initial Infection Type")
 ggplotly(KMplot[[1]])
 survdiff(surv_object ~ iinfct, data = std)
 ```
-- Since we see no intersection in our Kaplan-Meier Curves over time for each type of initial infection, we can concur proportional hazards hold. 
 
 ## Hazard Ratios 
+
+- The Hazard Ratio plot indicates proportional hazards after some initial spiking in the curves before time = 100 days.
+
 ```{r, echo = F}
 timevec <- 1:1500
 
@@ -276,10 +310,12 @@ cumhaz3 <- -log(sf3(timevec))
 
 #Hazard Ratio
 ggplotly(
-  ggplot(ggtheme = theme_fivethirtyeight()) + aes(x = timevec) + geom_line(aes(y = cumhaz1 / cumhaz2), col = "#daed64") + geom_line(aes(y = cumhaz3 / cumhaz1), col = "#6495ed") + geom_line(aes(y = cumhaz3 / cumhaz2), col = "#ed7864") +  labs(x = "Time", y = "Hazard Ratio", title = "Hazard Ratios for Three Initial Infections")
+  ggplot(ggtheme = theme_minimal()) + aes(x = timevec) + geom_line(aes(y = cumhaz1 / cumhaz2), col = "#daed64") + geom_line(aes(y = cumhaz3 / cumhaz1), col = "#6495ed") + geom_line(aes(y = cumhaz3 / cumhaz2), col = "#ed7864") +  labs(x = "Time", y = "Hazard Ratio", title = "Hazard Ratios for Three Initial Infections")
 )
 ```
 ## Cumulative Hazards and CLogLog
+
+- Further, the complementary log-log curves run parallel to each other after crossing once around time = 75 days.  
 
 ```{r, echo = F, warning = F}
 # {plot(survfit(surv_object ~ iinfct, data = std),col=4:6,lwd=1,fun="cumhaz")
@@ -294,7 +330,7 @@ cumHazPlot <-
     fun = "cumhaz",
     conf.int = FALSE,
     palette = c("#daed64", "#6495ed", "#ed7864"),
-    ggtheme =theme_fivethirtyeight()
+    ggtheme =theme_minimal()
   ) + ggtitle("Cumulative Hazard for Initial Infection Type")
 
 ggplotly(cumHazPlot$plot)
@@ -306,15 +342,12 @@ cLogLogPlot <-
     KMobj,
     fun = "cloglog",
     palette = c("#daed64", "#6495ed", "#ed7864"),
-    ggtheme = theme_fivethirtyeight()
+    ggtheme = theme_minimal()
   ) + ggtitle("Complimentary Log-Log for Initial Infection Type") 
 
 ggplotly(cLogLogPlot[[1]])
 ```
-
-# Schoenfield Residuals for Initial Infection
-
-- P-value here is large, so we do not have a violation of proportional hazards.
+- Once the initial Cox model was applied, the Schoenfeld residuals were plotted and there is no evidence of a non-random pattern that would suggest a violation of the assumptions.
 
 ```{r, echo = F}
 cox <- coxph(surv_object ~ iinfct, data = std)
@@ -323,8 +356,9 @@ hodg.zph <- cox.zph(cox)
 # plot(hodg.zph, main = "Schoenfeld Residuals for Initial Infection Type")
 
 #For initial infection
-ggcoxzph(hodg.zph[1], se = FALSE, font.main = 12, ggtheme = theme_fivethirtyeight(), point.col = "#6495ed")
+ggcoxzph(hodg.zph[1], se = FALSE, font.main = 12, ggtheme = theme_minimal(), point.col = "#6495ed")
 ```
+- The cox.zph function was then applied to the model which resulted in a p-value of 0.24 reinforcing that the proportional hazards assumption is maintained. Therefore, we chose to apply the Cox model which is elaborated on the next slide.
 
 # Finding the Best Model
 
@@ -378,8 +412,7 @@ lowessOBJ <- as.data.frame(lowess(std$yschool, martNoSchool))
 ggplotly(
   ggplot() + aes(std$yschool, martNoSchool) + geom_point() + 
     labs(x = "Years of School", y = "Martingale Residuals", title = "Martingale Residuals vs. Years of School") + 
-    geom_line(data = lowessOBJ, aes(x = x, y = y), col = "#6495ed") + geom_vline(xintercept = 9, color = "red") + 
-    geom_vline(xintercept = 12, colour = "red")
+    geom_line(data = lowessOBJ, aes(x = x, y = y), col = "#6495ed")
 )
 
 cat_yschool = cut(std$yschool,
@@ -410,7 +443,7 @@ b.preds <- predict(cox.model)
 ```
 
 ```{r, echo = F}
-#MArtingale vs Linear Predictor
+#Martingale vs Linear Predictor
 ggplotly(
   ggplot() + aes(
     x = b.preds,
@@ -420,43 +453,228 @@ ggplotly(
 )
 ```
 
-## dfBeta 
-```{r, echo = F}
-# years of school categorical 
+## Schoenfield
+
+```{r}
+test.ph <- cox.zph(cox.model)
+test.ph
+
+#plot(test.ph[1], main = "Schoenfeld Residuals for differernt initial infection types")
+
+#Condom use
+ggcoxzph(test.ph[2], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
+
+#Vaginal use
+ggcoxzph(test.ph[3], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
+
+#Discharge at exam use
+ggcoxzph(test.ph[4], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
+
+# Years of schooling
+ggcoxzph(test.ph[5], ggtheme =theme_minimal(),  se = FALSE, font.main = 12, point.col = "#ed7864")
+```
+
+
+```{r}
+# years of school  
 figdfb1 <- ggplotly(
   ggplot() + aes(
     x = std$obs,
-    y = b.dfb[, 4],
+    y = b.dfb[, 6],
     text = paste("Obs:", std$obs, "\ndfBeta:", round(b.dfb[, 4], 4))
   ) + geom_point() + labs(x = "Observation Number", y = "Years of School (Categorical)", title = "dfbeta Values for Years of School"),
   tooltip = "text"
 )
 
-# Oral Sex 30
+# Discharge at Exam
 figdfb2 <- ggplotly(
   ggplot() + aes(
     x = std$obs,
     y = b.dfb[, 5],
     text = paste("Obs:", std$obs, "\ndfBeta:", round(b.dfb[, 5], 4))
-  ) + geom_point() + labs(x = "Observation Number", y = "dfbeta for Oral Sex in the Past 30 Days", title = "dfbeta Values for Oral Sex in the Past 30 Days"),
+  ) + geom_point() + labs(x = "Observation Number", y = "Discharge at Exam", title = "dfbeta Values for Discharge at Exam"),
   tooltip = "text"
 )
 
-# Abdominal Sex
+# Vaginal Involvement
 figdfb3 <- ggplotly(
   ggplot() + aes(
     x = std$obs,
-    y = b.dfb[, 6],
+    y = b.dfb[, 4],
     text = paste("Obs:", std$obs, "\ndfBeta:", round(b.dfb[, 6], 4))
-  ) + geom_point() + labs(x = "Observation Number", y = "dfbeta for Abdominal Pain", title = "dfbeta Values for Presence of Abdominal Pain"),
+  ) + geom_point() + labs(x = "Observation Number", y = "Vaginal Involvement at Exam", title = "dfbeta Values for Vaginal Involvement at Exam"),
   tooltip = "text"
 )
 
-figdfb1
-figdfb2
-figdfb3
 
-subplot(figdfb1, figdfb2, figdfb3) %>% layout(title = "deBeta values for Years of Schooling \n (Categorical), Oral Sex in Past 30 Days, and Abdominal Pain")
+# Condom
+figdfb4 <- ggplotly(
+  ggplot() + aes(
+    x = std$obs,
+    y = b.dfb[, 3],
+    text = paste("Obs:", std$obs, "\ndfBeta:", round(b.dfb[, 6], 4))
+  ) + geom_point() + labs(x = "Observation Number", y = "Condom", title = "dfbeta Values for Condom Usage"),
+  tooltip = "text"
+)
+
+
+fig <- subplot(
+  figdfb1,
+  figdfb2,
+  figdfb3,
+  figdfb4,
+  nrows = 2,
+  shareX = TRUE,
+  shareY = TRUE
+) %>% layout(title = "dfBeta values for Years of Schooling, Discharge at Exam, Vaginal Involvement, \nand Condom Usage")
+
+# Update title
+annotations = list( 
+  list( 
+    x = 0.2,  
+    y = 1.0,  
+    text = "Years of Schooling",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.8,  
+    y = 1,  
+    text = "Discharge at Exam",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.2,  
+    y = 0.475,  
+    text = "Vaginal Involvement",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),
+  list( 
+    x = 0.8,  
+    y = 0.475,  
+    text = "Condom Usage",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ))
+
+fig <- fig %>%layout(annotations = annotations) 
+fig
+```
+
+
+## dfBeta 
+```{r, echo = F}
+# years of school  
+figdfb1 <- ggplotly(
+  ggplot() + aes(
+    x = std$obs,
+    y = b.dfb[, 6],
+    text = paste("Obs:", std$obs, "\ndfBeta:", round(b.dfb[, 4], 4))
+  ) + geom_point() + labs(x = "Observation Number", y = "Years of School (Categorical)", title = "dfbeta Values for Years of School"),
+  tooltip = "text"
+)
+
+# Discharge at Exam
+figdfb2 <- ggplotly(
+  ggplot() + aes(
+    x = std$obs,
+    y = b.dfb[, 5],
+    text = paste("Obs:", std$obs, "\ndfBeta:", round(b.dfb[, 5], 4))
+  ) + geom_point() + labs(x = "Observation Number", y = "Discharge at Exam", title = "dfbeta Values for Discharge at Exam"),
+  tooltip = "text"
+)
+
+# Vaginal Involvement
+figdfb3 <- ggplotly(
+  ggplot() + aes(
+    x = std$obs,
+    y = b.dfb[, 4],
+    text = paste("Obs:", std$obs, "\ndfBeta:", round(b.dfb[, 6], 4))
+  ) + geom_point() + labs(x = "Observation Number", y = "Vaginal Involvement at Exam", title = "dfbeta Values for Vaginal Involvement at Exam"),
+  tooltip = "text"
+)
+
+
+# Condom
+figdfb4 <- ggplotly(
+  ggplot() + aes(
+    x = std$obs,
+    y = b.dfb[, 3],
+    text = paste("Obs:", std$obs, "\ndfBeta:", round(b.dfb[, 6], 4))
+  ) + geom_point() + labs(x = "Observation Number", y = "Condom", title = "dfbeta Values for Condom Usage"),
+  tooltip = "text"
+)
+
+
+fig <- subplot(
+  figdfb1,
+  figdfb2,
+  figdfb3,
+  figdfb4,
+  nrows = 2,
+  shareX = TRUE,
+  shareY = TRUE
+) %>% layout(title = "dfBeta values for Years of Schooling, Discharge at Exam, Vaginal Involvement, \nand Condom Usage")
+
+# Update title
+annotations = list( 
+  list( 
+    x = 0.2,  
+    y = 1.0,  
+    text = "Years of Schooling",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.8,  
+    y = 1,  
+    text = "Discharge at Exam",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.2,  
+    y = 0.475,  
+    text = "Vaginal Involvement",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),
+  list( 
+    x = 0.8,  
+    y = 0.475,  
+    text = "Condom Usage",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ))
+
+fig <- fig %>%layout(annotations = annotations) 
+fig
 ```
 
 # Outliers 
