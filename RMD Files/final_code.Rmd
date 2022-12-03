@@ -2,6 +2,7 @@
 title: "STA 222 Final Project"
 output: html_document
 date: "2022-12-03"
+authors: Kate Jones, Gianni Spiga, Yichu Chen, Gu Gong
 ---
 
 #### Loading Libraries
@@ -145,6 +146,7 @@ fig2 <-
   )
 fig2
 ```
+
 ```{r, echo = F, message = F}
 
 std0$iinfct <-
@@ -212,7 +214,6 @@ ggplotly(ggplot(data=std)+
 )
 ```
 
-
 #### Checking Model Assumptions
 
 ```{r}
@@ -253,9 +254,11 @@ ggplotly(
   ggplot(ggtheme = theme_minimal()) + aes(x = timevec) + geom_line(aes(y = cumhaz1 / cumhaz2), col = "#daed64") + geom_line(aes(y = cumhaz3 / cumhaz1), col = "#6495ed") + geom_line(aes(y = cumhaz3 / cumhaz2), col = "#ed7864") +  labs(x = "Time", y = "Hazard Ratio", title = "Hazard Ratios for Three Initial Infections")
 )
 ```
-## Cumulative Hazards and CLogLog
 
-- Not surprisingly, we can see that the cumulative hazard grows much faster over time when Gonorrhea is the initial infection instead of Chlamydia and being initially infected with both. 
+#### Cumulative Hazards and CLogLog
+
+Not surprisingly, we can see that the cumulative hazard grows much faster over time when Gonorrhea is the initial infection instead of Chlamydia and being initially infected with both. 
+
 ```{r, echo = F, warning = F}
 
 # Interactive plot 
@@ -290,11 +293,12 @@ ggplotly(cLogLogPlot[[1]])
 cox <- coxph(surv_object ~ iinfct, data = std)
 summary(cox)
 hodg.zph <- cox.zph(cox)
+test.ph <- cox.zph(cox)
+test.ph
 
 #For initial infection
 ggcoxzph(hodg.zph[1], se = FALSE, font.main = 12, ggtheme = theme_minimal(), point.col = "#6495ed")
 ```
-
 
 #### Building the Model
 
@@ -312,15 +316,32 @@ summary(cox1)
 
 ```{r, echo = F}
 drop1(cox1, test = "Chisq")
+# Drop test indicates that condom may also be significant.  
 ```
 
 ```{r, echo = F}
+cox2<- coxph(surv_object ~ iinfct+condom+vagina+dchexam+yschool, data = std)
+summary(cox2)
+
+cox3<- coxph(surv_object ~ iinfct+vagina+dchexam+yschool, data = std)
+summary(cox3)
+
+AIC(cox2)
+AIC(cox3)
+# AIC indicates that the model with condom is a better fit.
+
 std$condom <-
   mapvalues(
     std$condom,
     from = c("always", "sometime", "never"),
     to = c("use", "use", "never")
   )
+
+cox4<- coxph(surv_object ~ iinfct+condom+vagina+dchexam+yschool, data = std)
+summary(cox4)
+drop1(cox4)
+AIC(cox4)
+# AIC is also now lower, so this will be our model.
 ```
 
 ```{r}
